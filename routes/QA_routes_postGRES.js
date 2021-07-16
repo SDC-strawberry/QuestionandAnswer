@@ -7,6 +7,7 @@ const QA_RouteConfig = require('../../config.js');
 
 // GET QUESTION LIST for a given product_id
 router.get('/questions', (req, res) => {
+  console.log('entered the /questions route: ');
 
   // product_id	integer	Specifies the product for which to retrieve questions.
   // page	integer	Selects the page of results to return. Default 1.
@@ -20,12 +21,15 @@ router.get('/questions', (req, res) => {
     count: req.params.count,
   }
 
-  myPostGreSQL.getQuestions(obj_param, (err, res) => {
+  myPostGreSQL.getQuestions(obj_param, (err, result) => {
     if (err) {
       console.log('error getting question: ', err);
     }
-    console.log('GET question success ', result)
-    res.send(result);
+    //console.log('GET question success ', result)
+
+    res.header("Content-Type",'application/json');
+    res.send(JSON.stringify(result, null, 4));
+
   });
 
 });

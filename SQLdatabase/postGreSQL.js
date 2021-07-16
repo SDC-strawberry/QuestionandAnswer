@@ -52,6 +52,45 @@ client.connect()
 
 
 
+const buildQuestionObj = function(rowElement) {
+
+  let new_question_obj = {
+    question_id : rowElement.question_id,
+    question_body : rowElement.question_body,
+    question_date : rowElement.question_date,
+    asker_name : rowElement.asker_name,
+    question_helpfulness : rowElement.question_helpfulness,
+    reported : rowElement.reported,
+    answers : {},
+  }
+
+  return new_question_obj;
+}
+
+const buildAnswerObj = function(rowElement) {
+
+  let new_answer_obj = {
+    id : rowElement.answer_id,
+    body : rowElement.answer_body,
+    date : rowElement.answer_date,
+    answerer_name : rowElement.answerer_name, 
+    helpfulness : rowElement.answer_helpfulness,
+    photos: [],
+  }
+
+  return new_answer_obj;
+  
+}
+
+const buildPhotoObj = function(rowElement) {
+  let built_obj = {
+    id: rowElement.photos_id,
+    url: rowElement.photos_url,
+  }
+  return built_obj;
+}
+
+
 
 // *********  GET QUESTIONS AND ANSWERS ********* 
 
@@ -68,20 +107,132 @@ const getQuestions = function(obj_param, callback) {
   // next we join by the answers;
 
   //var queryStr = `SELECT * from "Questions" `;
-  var queryStr = `SELECT "Questions".id as question_id, "Questions".body as question_body, "Answers".body as answer_body, photos.url as photo_url from "Questions"`;
-    queryStr+= `LEFT OUTER JOIN "Answers" on "Questions".id = "Answers".question_id `;
-    queryStr+= `LEFT OUTER JOIN photos on "Answers".id = photos.answer_id `;
-    queryStr+= `WHERE ("Questions".id > 1 AND "Questions".id < 11) ORDER BY "Questions".id`;
+  // var queryStr = `SELECT "Questions".id as question_id, "Questions".body as question_body, "Answers".body as answer_body, photos.url as photo_url from "Questions"`;
+  //   queryStr+= `LEFT OUTER JOIN "Answers" on "Questions".id = "Answers".question_id `;
+  //   queryStr+= `LEFT OUTER JOIN photos on "Answers".id = photos.answer_id `;
+  //   queryStr+= `WHERE ("Questions".id > 1 AND "Questions".id < 11) ORDER BY "Questions".id`;
+
+
+  //for now im opting for getting all data in a single query
+  var queryStr = `SELECT "Questions".id as question_pk, "Questions".id as question_id, "Questions".body as question_body, 
+                  "Questions".date_written as question_date, "Questions".asker_name as asker_name, "Questions".helpful as question_helpfulness,
+                  "Questions".reported as reported, "Answers".id as answer_id, "Answers".body as answer_body, 
+                  "Answers".date_written as answer_date, "Answers".answerer_name as answerer_name, "Answers".helpful as answer_helpfulness,
+                  photos.id as photos_id, photos.url as photos_url from "Questions" 
+                  LEFT OUTER JOIN "Answers" on "Questions".id = "Answers".question_id 
+                  LEFT OUTER JOIN photos on "Answers".id = photos.answer_id
+                  WHERE ("Questions".product_id = 1) ORDER BY "Questions".id`;
 
     client.query(queryStr, (err, res) => {
       if (err) {
         callback(err, null);
       }
       console.log('massive query');
-      callback(null, res.rows);
+
+      // once we get the query we can begin to format it.
+      // res.rows is an array.
+
+      // these are flags
+      var previousQuestion_id = res.rows[0].question_id;
+      var previousAnswer_id = res.rows[0].answer_id;
+      var resultsArray = [];
+
+
+      // the BASE CASE
+      // previousQuestion_id = res.rows[0].question_id;
+      // let currentQuestionObj = buildQuestionObj(res.rows[0]);
+
+      // // if there is at least one answer for this question, build the obj
+      // if (res.rows.answer_id !== null) {
+      //   let currentAnswerObj = buildAnswerObj(res.rows[0]);
+      //   currentQuestionObj.answers[res.rows[0].answer_id] = currentAnswerObj;
+
+      //     // if there is at least one photo url for this answer
+      //     if (res.rows[0].photos_id !== null) {
+      //       currentAnswerObj.photos.push(buildPhotoObj(res.rows[0]));
+      //     }
+      // }
+      // resultsArray.push(currentQuestionObj);
+      // the BASE CASE
+
+
+      let rowCounter = 0;
+
+      while (rowCounter < (res.rows.length - 1) ) {
+        //console.log(`outercurrentId : ${res.rows[rowCounter].question_id}`);
+
+        previousQuestion_id = res.rows[rowCounter].question_id;
+
+        let currentQuestionObj = buildQuestionObj(res.rows[rowCounter]);
+        // if there is at least one answer for this question, build the obj
+        if (res.rows.answer_id !== null) {
+          let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
+          currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+  
+            // if there is at least one photo url for this answer
+            if (res.rows[rowCounter].photos_id !== null) {
+              currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+            }
+        }
+
+
+        while ((previousQuestion_id === res.rows[rowCounter].question_id) && (rowCounter < (res.rows.length - 1))) {
+          
+          //console.log(`previousId- ${previousQuestion_id} :: currentId ${res.rows[rowCounter].question_id} :: answerId ${res.rows[rowCounter].answer_id} :: photoId ${res.rows[rowCounter].photos_id}`);
+          
+          console.log('outer answer_ids: ', res.rows[rowCounter].answer_id);
+          let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
+
+          previousAnswer_id = res.rows[rowCounter].answer_id;
+          rowCounter++;
+
+          while (previousAnswer_id === res.rows[rowCounter].answer_id) {
+            if (res.rows[rowCounter].photos_id !== null) {
+              currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+            }
+            rowCounter++;
+          }
+
+
+          currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+        }
+        resultsArray.push(currentQuestionObj);
+      }
+        
+      callback(null, resultsArray);
     });
 
 };
+
+
+        // // for each question, iterate through all the answers
+        // while (previousQuestion_id === res.rows[rowCounter].question_id) {
+
+        //   if (res.rows.answer_id !== null) {
+        //     let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
+
+
+
+        //     //once we build the answer with current AnswerObj, we assign it to the currentQuestionObj
+        //     currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+        //   }
+        // }
+
+
+
+
+//             // for each answer iterate through all the questions
+// while (previousAnswer_id === res.rows[rowCounter].answer_id) {
+
+//   if (res.rows[rowCounter].photos_id !== null) {
+//     currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+//   }
+
+//   ++rowCounter;
+// }
+
+
+
 
 // database interaction to get all the answers for a particular question
 const getAnswers = function(obj_param, callback) {

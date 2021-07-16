@@ -39,8 +39,11 @@ app.get('/questions', (req, res) => {
     if (err) {
       console.log('error getting question: ', err);
     }
-    console.log('GET question success ', result)
-    res.send(result);
+    //console.log('GET question success ', result)
+
+    res.header("Content-Type",'application/json');
+    res.send(JSON.stringify(result, null, 4));
+
   });
 
 });
