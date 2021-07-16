@@ -184,17 +184,28 @@ const getQuestions = function(obj_param, callback) {
           let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
 
           previousAnswer_id = res.rows[rowCounter].answer_id;
+          currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+
+            // there might be a first photo under this answer
+            if (res.rows[rowCounter].photos_id !== null) {
+              currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+              //console.log(buildPhotoObj(res.rows[rowCounter]));
+            }
+
+
+
           rowCounter++;
+
 
           while (previousAnswer_id === res.rows[rowCounter].answer_id) {
             if (res.rows[rowCounter].photos_id !== null) {
               currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+              //console.log(buildPhotoObj(res.rows[rowCounter]));
             }
             rowCounter++;
           }
 
-
-          currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+          
         }
         resultsArray.push(currentQuestionObj);
       }
