@@ -10,17 +10,24 @@
 -- 
 -- ---
 
-DROP TABLE IF EXISTS `Questions`;
+
+DROP DATABASE IF EXISTS questionandanswer;
+
+CREATE DATABASE questionandanswer;
+
+USE questionandanswer;
+
+DROP TABLE IF EXISTS Questions;
 		
-CREATE TABLE `Questions` (
-  `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
-  `question_body` VARCHAR(255) NULL DEFAULT NULL,
-  `question_date` TIMESTAMP NULL DEFAULT NULL,
-  `asker_name` VARCHAR NULL DEFAULT NULL,
-  `question_helpfulness` INTEGER NULL DEFAULT NULL,
-  `reported` bit NULL DEFAULT NULL,
-  `product_id` INTEGER NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+CREATE TABLE Questions (
+  id INT NOT NULL AUTO_INCREMENT,
+  question_body VARCHAR(255) NOT NULL,
+  question_date VARCHAR(50) NOT NULL,
+  asker_name VARCHAR(50) NOT NULL,
+  question_helpfulness INT NOT NULL,
+  reported bit NOT NULL,
+  product_id INT NOT NULL,
+  PRIMARY KEY (id)
 );
 
 -- ---
@@ -28,17 +35,17 @@ CREATE TABLE `Questions` (
 -- 
 -- ---
 
-DROP TABLE IF EXISTS `Answers`;
+DROP TABLE IF EXISTS Answers;
 		
-CREATE TABLE `Answers` (
-  `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
-  `body` VARCHAR NULL DEFAULT NULL,
-  `date` TIMESTAMP NULL DEFAULT NULL,
-  `answerer_name` VARCHAR NULL DEFAULT NULL,
-  `helpfulness` INTEGER NULL DEFAULT NULL,
-  `photos` INTEGER NULL DEFAULT NULL,
-  `question_id` INTEGER NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+CREATE TABLE Answers (
+  id INT NOT NULL AUTO_INCREMENT,
+  body VARCHAR(255),
+  answer_date VARCHAR(50),
+  answerer_name VARCHAR(50) NOT NULL,
+  helpfulness INT NOT NULL,
+  photos INT NOT NULL,
+  question_id INT NOT NULL,
+  PRIMARY KEY (id)
 );
 
 -- ---
@@ -46,20 +53,35 @@ CREATE TABLE `Answers` (
 -- 
 -- ---
 
-DROP TABLE IF EXISTS `Photos`;
+DROP TABLE IF EXISTS Photos;
 		
-CREATE TABLE `Photos` (
-  `answer_id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
-  `photo_url` VARCHAR NULL DEFAULT NULL,
-  PRIMARY KEY (`answer_id`)
+CREATE TABLE Photos (
+  answer_id INT AUTO_INCREMENT NOT NULL,
+  photo_url VARCHAR(255) NOT NULL,
+  PRIMARY KEY (answer_id)
+);
+
+-- ---
+-- Table 'Interactions'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `Interactions`;
+		
+CREATE TABLE Interactions (
+  id INT AUTO_INCREMENT NOT NULL,
+  element VARCHAR(255) NOT NULL,
+  widget VARCHAR(255) NOT NULL,
+  time VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
 );
 
 -- ---
 -- Foreign Keys 
 -- ---
 
-ALTER TABLE `Answers` ADD FOREIGN KEY (question_id) REFERENCES `Questions` (`id`);
-ALTER TABLE `Photos` ADD FOREIGN KEY (answer_id) REFERENCES `Answers` (`id`);
+ALTER TABLE Answers ADD FOREIGN KEY (question_id) REFERENCES Questions (id);
+ALTER TABLE Photos ADD FOREIGN KEY (answer_id) REFERENCES Answers (id);
 
 -- ---
 -- Table Properties
@@ -68,6 +90,7 @@ ALTER TABLE `Photos` ADD FOREIGN KEY (answer_id) REFERENCES `Answers` (`id`);
 -- ALTER TABLE `Questions` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 -- ALTER TABLE `Answers` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 -- ALTER TABLE `Photos` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+-- ALTER TABLE `Interactions` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- ---
 -- Test Data
@@ -79,3 +102,5 @@ ALTER TABLE `Photos` ADD FOREIGN KEY (answer_id) REFERENCES `Answers` (`id`);
 -- ('','','','','','','');
 -- INSERT INTO `Photos` (`answer_id`,`photo_url`) VALUES
 -- ('','');
+-- INSERT INTO `Interactions` (`id`,`element`,`widget`,`time`) VALUES
+-- ('','','','');

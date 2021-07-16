@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1625944096193" clover="3.2.0">
+  <project timestamp="1625944096193" name="All files">
+    <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0" elements="3" coveredelements="3" complexity="0" loc="3" ncloc="3" packages="1" files="3" classes="3"/>
+    <file name="answersPerQuestion.js" path="/Users/Tom1/Desktop/SDC1/QuestionandAnswer/QuestionAnswer-Test/answersPerQuestion.js">
+      <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <line num="1" count="1" type="stmt"/>
+    </file>
+    <file name="listquestionsexample.js" path="/Users/Tom1/Desktop/SDC1/QuestionandAnswer/QuestionAnswer-Test/listquestionsexample.js">
+      <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <line num="4" count="1" type="stmt"/>
+    </file>
+    <file name="questionsPerProduct.js" path="/Users/Tom1/Desktop/SDC1/QuestionandAnswer/QuestionAnswer-Test/questionsPerProduct.js">
+      <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <line num="1" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>
