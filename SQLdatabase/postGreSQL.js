@@ -137,25 +137,6 @@ const getQuestions = function(obj_param, callback) {
       var previousAnswer_id = res.rows[0].answer_id;
       var resultsArray = [];
 
-
-      // the BASE CASE
-      // previousQuestion_id = res.rows[0].question_id;
-      // let currentQuestionObj = buildQuestionObj(res.rows[0]);
-
-      // // if there is at least one answer for this question, build the obj
-      // if (res.rows.answer_id !== null) {
-      //   let currentAnswerObj = buildAnswerObj(res.rows[0]);
-      //   currentQuestionObj.answers[res.rows[0].answer_id] = currentAnswerObj;
-
-      //     // if there is at least one photo url for this answer
-      //     if (res.rows[0].photos_id !== null) {
-      //       currentAnswerObj.photos.push(buildPhotoObj(res.rows[0]));
-      //     }
-      // }
-      // resultsArray.push(currentQuestionObj);
-      // the BASE CASE
-
-
       let rowCounter = 0;
 
       while (rowCounter < (res.rows.length - 1) ) {
@@ -165,7 +146,7 @@ const getQuestions = function(obj_param, callback) {
 
         let currentQuestionObj = buildQuestionObj(res.rows[rowCounter]);
         // if there is at least one answer for this question, build the obj
-        if (res.rows.answer_id !== null) {
+        if (res.rows[rowCounter].answer_id !== null) {
           let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
           currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
   
@@ -181,10 +162,19 @@ const getQuestions = function(obj_param, callback) {
           //console.log(`previousId- ${previousQuestion_id} :: currentId ${res.rows[rowCounter].question_id} :: answerId ${res.rows[rowCounter].answer_id} :: photoId ${res.rows[rowCounter].photos_id}`);
           
           console.log('outer answer_ids: ', res.rows[rowCounter].answer_id);
+
+
+          // let currentAnswerObj;
+
+
           let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
 
           previousAnswer_id = res.rows[rowCounter].answer_id;
-          currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+          
+          // we can probably change this to not even call buildAnswerObj
+          if (res.rows[rowCounter].answer_id) {
+            currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+          }
 
             // there might be a first photo under this answer
             if (res.rows[rowCounter].photos_id !== null) {
