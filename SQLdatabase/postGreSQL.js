@@ -129,9 +129,6 @@ const getQuestions = function(obj_param, callback) {
       }
       console.log('massive query');
 
-      // once we get the query we can begin to format it.
-      // res.rows is an array.
-
       // these are flags
       var previousQuestion_id = res.rows[0].question_id;
       var previousAnswer_id = res.rows[0].answer_id;
@@ -159,16 +156,7 @@ const getQuestions = function(obj_param, callback) {
 
         while ((previousQuestion_id === res.rows[rowCounter].question_id) && (rowCounter < (res.rows.length - 1))) {
           
-          //console.log(`previousId- ${previousQuestion_id} :: currentId ${res.rows[rowCounter].question_id} :: answerId ${res.rows[rowCounter].answer_id} :: photoId ${res.rows[rowCounter].photos_id}`);
-          
-          console.log('outer answer_ids: ', res.rows[rowCounter].answer_id);
-
-
-          // let currentAnswerObj;
-
-
           let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
-
           previousAnswer_id = res.rows[rowCounter].answer_id;
           
           // we can probably change this to not even call buildAnswerObj
@@ -182,10 +170,7 @@ const getQuestions = function(obj_param, callback) {
               //console.log(buildPhotoObj(res.rows[rowCounter]));
             }
 
-
-
           rowCounter++;
-
 
           while (previousAnswer_id === res.rows[rowCounter].answer_id) {
             if (res.rows[rowCounter].photos_id !== null) {
@@ -194,45 +179,13 @@ const getQuestions = function(obj_param, callback) {
             }
             rowCounter++;
           }
-
-          
         }
         resultsArray.push(currentQuestionObj);
       }
-        
       callback(null, resultsArray);
     });
 
 };
-
-
-        // // for each question, iterate through all the answers
-        // while (previousQuestion_id === res.rows[rowCounter].question_id) {
-
-        //   if (res.rows.answer_id !== null) {
-        //     let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
-
-
-
-        //     //once we build the answer with current AnswerObj, we assign it to the currentQuestionObj
-        //     currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
-        //   }
-        // }
-
-
-
-
-//             // for each answer iterate through all the questions
-// while (previousAnswer_id === res.rows[rowCounter].answer_id) {
-
-//   if (res.rows[rowCounter].photos_id !== null) {
-//     currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-//   }
-
-//   ++rowCounter;
-// }
-
-
 
 
 // database interaction to get all the answers for a particular question
@@ -242,27 +195,40 @@ const getAnswers = function(obj_param, callback) {
   let count = obj_param.count;
   let question_id = obj_param.question_id;
 
-  var queryStr = `SELECT * FROM "Answers" where question_id = ${question_id} LIMIT ${count}`;
+  // var queryStr = `SELECT * FROM "Answers" where question_id = ${question_id} LIMIT ${count}`;
   // get all the ids of the Answers and perform a query for each of the answers returned for their photos.
 
   // we have to get all the photos for the particular answer in question, map that over all the returned 
   // answer_ids.
-  var queryStr2 = `SELECT * FROM photos where answer_id = ${answer_id}`;
+  // var queryStr2 = `SELECT * FROM photos where answer_id = ${answer_id}`;
   // the results of that should be stuffed into a results array
 
   // this is one way to do it, without joins, uses 2 queries
-  var hypoQuery = `SELECT "Answers".id, photos.url FROM "Answers", photos WHERE question_id = 1 AND  photos.answer_id = "Answers".id`;
+  // var hypoQuery = `SELECT "Answers".id, photos.url FROM "Answers", photos WHERE question_id = 1 AND  photos.answer_id = "Answers".id`;
 
   // implementation choice to use multiple simple queries instead of a join, because
   // the nature of the join is not one to one which would create duplicative results.
+
+  var queryStr = `SELECT "Answers".body as answer_body, "Answers".date_written as answer_date, "Answers".answerer_name as answer_answerer, 
+                  "Answers".answerer_email as answerer_email, "Answers".reported as answer_reported, "Answers".helpful as answer_helpful,
+                  photos.id as photos_id, photos.url as photos_url
+                  FROM "Answers"
+                  LEFT OUTER JOIN photos on "Answers".id = photos.answer_id
+                  WHERE ("Answers".question_id = 1)`;
+
+
+  client.query(queryStr, (err, results) => {
+    if (err) {
+      callback(err, null);
+    }
+    console.log('answer query GET');
+    callback(null, results.rows);
+  });
+
+
 };
 
-
-
 // *********  GET QUESTIONS AND ANSWERS ********* 
-
-
-
 
 // database interaction to add a question into the database
 // schema for reference: id,product_id,body,date_written,asker_name,asker_email,reported,helpful

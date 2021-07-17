@@ -49,6 +49,35 @@ app.get('/questions', (req, res) => {
 });
 
 
+
+app.get('/answers', (req, res) => {
+
+  // product_id	integer	Specifies the product for which to retrieve questions.
+  // page	integer	Selects the page of results to return. Default 1.
+  // count	integer	Specifies how many results per page to return. Default 5.
+
+  // "SELECT * FROM "Questions" LIMIT 5"
+
+  let obj_param = {
+    product_id: req.params.product_id,
+    page: req.params.page,
+    count: req.params.count,
+  }
+
+  myPostGreSQL.getAnswers(obj_param, (err, result) => {
+    if (err) {
+      console.log('error getting question: ', err);
+    }
+
+    res.header("Content-Type",'application/json');
+    res.send(JSON.stringify(result, null, 4));
+  });
+
+});
+
+
+
+
 app.get('/', (req, res) => {
 
   // building the question obj
