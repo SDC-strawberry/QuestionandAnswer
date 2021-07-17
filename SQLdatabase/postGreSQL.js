@@ -97,10 +97,9 @@ const buildPhotoObj = function(rowElement) {
 // database interaction to add a question into the database
 const getQuestions = function(obj_param, callback) {
 
-  let page = obj_param.page;
-  let count = obj_param.count;
-  let product_id = obj_param.product_id;
+  let { page, count, product_id } = obj_param;
 
+  
   //var queryStr = `SELECT * FROM "Questions" WHERE product_id = ${product_id} LIMIT ${count}`;
 
   // first limit by page
@@ -182,7 +181,14 @@ const getQuestions = function(obj_param, callback) {
         }
         resultsArray.push(currentQuestionObj);
       }
-      callback(null, resultsArray);
+      
+
+      var finalObject = {
+        product_id: product_id,
+        results: resultsArray,
+      }
+
+      callback(null, finalObject);
     });
 
 };
@@ -191,9 +197,8 @@ const getQuestions = function(obj_param, callback) {
 // database interaction to get all the answers for a particular question
 const getAnswers = function(obj_param, callback) {
 
-  let page = obj_param.page;
-  let count = obj_param.count;
-  let question_id = obj_param.question_id;
+  let { page, count, question_id } = obj_param;
+
 
   // var queryStr = `SELECT * FROM "Answers" where question_id = ${question_id} LIMIT ${count}`;
   // get all the ids of the Answers and perform a query for each of the answers returned for their photos.
@@ -208,12 +213,12 @@ const getAnswers = function(obj_param, callback) {
 
   // implementation choice to use multiple simple queries instead of a join, because
   // the nature of the join is not one to one which would create duplicative results.
-
+  
   var queryStr = `SELECT "Answers".id as answer_id, "Answers".body as answer_body, "Answers".date_written as answer_date, "Answers".answerer_name as answerer_name, 
                   "Answers".helpful as answer_helpfulness, photos.id as photos_id, photos.url as photos_url
                   FROM "Answers"
                   LEFT OUTER JOIN photos on "Answers".id = photos.answer_id
-                  WHERE ("Answers".question_id = 1)`;
+                  WHERE ("Answers".question_id = ${question_id})`;
 
 
   client.query(queryStr, (err, res) => {
@@ -254,7 +259,15 @@ const getAnswers = function(obj_param, callback) {
         resultsArray.push(currentAnswerObj);
         
       }
-      callback(null, resultsArray);
+
+      var finalObject = {
+        question_id: question_id,
+        page: page,
+        count: count,
+        results: resultsArray,
+      }
+
+      callback(null, finalObject);
   });
 
 

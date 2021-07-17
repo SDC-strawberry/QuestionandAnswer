@@ -1,8 +1,10 @@
 const express = require("express");
 const myPostGreSQL = require('./SQLdatabase/postGreSQL.js');
+const QAroutes = require('./server/routes/QA_routes.js');
 //const myNoSQLdb = require("./NoSQLdatabase/mongoindex.js");
 const app = express();
 const PORT = 3000;
+
 
 //perhaps process.env.port || 6379 is better practice?
 const REDIS_PORT = 6379;  
@@ -15,11 +17,18 @@ const redis = require('redis');
 
 // const redisClient = redis.createClient(REDIS_PORT);
 
+// import routes
+
+
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname + "/../client/dist"));
+
+
+app.use('/qa', QAroutes);
 
 app.get('/questions', (req, res) => {
 
@@ -30,9 +39,9 @@ app.get('/questions', (req, res) => {
   // "SELECT * FROM "Questions" LIMIT 5"
 
   let obj_param = {
-    product_id: req.params.product_id,
-    page: req.params.page,
-    count: req.params.count,
+    product_id: 1,
+    page: 1,
+    count: 5,
   }
 
   myPostGreSQL.getQuestions(obj_param, (err, result) => {
@@ -59,9 +68,9 @@ app.get('/answers', (req, res) => {
   // "SELECT * FROM "Questions" LIMIT 5"
 
   let obj_param = {
-    product_id: req.params.product_id,
-    page: req.params.page,
-    count: req.params.count,
+    question_id: 1,
+    page: 1,
+    count: 5,
   }
 
   myPostGreSQL.getAnswers(obj_param, (err, result) => {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const myPostGreSQL = require('./SQLdatabase/postGreSQL.js');
-const QA_RouteConfig = require('../../config.js');
+const myPostGreSQL = require('../../SQLdatabase/postGreSQL.js');
+//const QA_RouteConfig = require('../../config.js');
 
 
 
@@ -15,10 +15,11 @@ router.get('/questions', (req, res) => {
 
   // "SELECT * FROM "Questions" LIMIT 5"
 
+  // these are default values for now
   let obj_param = {
-    product_id: req.params.product_id,
-    page: req.params.page,
-    count: req.params.count,
+    product_id: 1,
+    page: 1,
+    count: 5,
   }
 
   myPostGreSQL.getQuestions(obj_param, (err, result) => {
@@ -38,10 +39,11 @@ router.get('/questions', (req, res) => {
 router.get('/questions/:question_id/answers', (req, res) => {
  // console.log('returns answers for a given question', req.params.question_id);
 
- let obj_param = {
-    question_id: req.params.question_id,
-    page: req.params.page,
-    count: req.params.count,
+  // these are default values for now
+  let obj_param = {
+    question_id: 1,
+    page: 1,
+    count: 5,
   }
 
   myPostGreSQL.getAnswers(obj_param, (err, res) => {
