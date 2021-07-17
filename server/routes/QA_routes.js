@@ -18,9 +18,11 @@ router.get('/questions', (req, res) => {
   // these are default values for now
   let obj_param = {
     product_id: 1,
-    page: 1,
-    count: 5,
+    page: (req.query.page) ? req.query.page : 1,
+    count: (req.query.count) ? req.query.count : 5
   }
+
+  console.log(`page: ${obj_param.page}, count: ${obj_param.count}`);
 
   myPostGreSQL.getQuestions(obj_param, (err, result) => {
     if (err) {
@@ -39,19 +41,21 @@ router.get('/questions', (req, res) => {
 router.get('/questions/:question_id/answers', (req, res) => {
  // console.log('returns answers for a given question', req.params.question_id);
 
+ console.log(`page: ${req.query.page}, count: ${req.query.count}`);
+
   // these are default values for now
   let obj_param = {
     question_id: 1,
-    page: 1,
-    count: 5,
+    page: (req.query.page) ? req.query.page : 1,
+    count: (req.query.count) ? req.query.count : 5
   }
 
-  myPostGreSQL.getAnswers(obj_param, (err, res) => {
+  myPostGreSQL.getAnswers(obj_param, (err, result) => {
     if (err) {
       console.log('Error getting answers: ', err);
     }
-    console.log('GET answer success: ', result)
-    res.send(result);
+    res.header("Content-Type",'application/json');
+    res.send(JSON.stringify(result, null, 4));
   });
 
 });
@@ -60,13 +64,6 @@ router.get('/questions/:question_id/answers', (req, res) => {
 router.post('/questions/:question_id/answers', (req, res) => {
   // construct object
   const builtPath = API_PATH + `questions/${req.params.question_id}/answers`;
-
-  // const answerToBePosted = {
-  //   body: 'Example answer to be posted',
-  //   name: 'Question person',
-  //   email: 'crimson@avenger.com',
-  //   photos: [],
-  // };
 
   // NOTE TO SELF UNCOMMENT THIS and ADD Product_ID to the initial axios request.
   const answerToBePosted = {
@@ -107,13 +104,7 @@ router.post('/questions', (req, res) => {
 });
 
 
-
-
-
-
-
 // REPORT QUESTIONS
-
 // Mark Question as Helpful
 router.put('/questions/:question_id/helpful', (req, res) => {
 
@@ -124,8 +115,6 @@ router.put('/questions/:question_id/helpful', (req, res) => {
     console.log('Helpful Question successful: ', result)
     res.send(result);
   });
-
-
 });
 
 // Report Question
@@ -142,7 +131,6 @@ router.put('/questions/:question_id/report', (req, res) => {
 });
 
 // REPORT ANSWERS
-
 // Mark Answer as Helpful
 router.put('/answers/:answer_id/helpful', (req, res) => {
  

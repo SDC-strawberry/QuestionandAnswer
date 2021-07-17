@@ -18,74 +18,16 @@ const redis = require('redis');
 // const redisClient = redis.createClient(REDIS_PORT);
 
 // import routes
-
-
-
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.static(__dirname + "/../client/dist"));
 
 
+// import the routes
 app.use('/qa', QAroutes);
 
-app.get('/questions', (req, res) => {
 
-  // product_id	integer	Specifies the product for which to retrieve questions.
-  // page	integer	Selects the page of results to return. Default 1.
-  // count	integer	Specifies how many results per page to return. Default 5.
-
-  // "SELECT * FROM "Questions" LIMIT 5"
-
-  let obj_param = {
-    product_id: 1,
-    page: 1,
-    count: 5,
-  }
-
-  myPostGreSQL.getQuestions(obj_param, (err, result) => {
-    if (err) {
-      console.log('error getting question: ', err);
-    }
-    //console.log('GET question success ', result)
-
-    res.header("Content-Type",'application/json');
-    res.send(JSON.stringify(result, null, 4));
-
-  });
-
-});
-
-
-
-app.get('/answers', (req, res) => {
-
-  // product_id	integer	Specifies the product for which to retrieve questions.
-  // page	integer	Selects the page of results to return. Default 1.
-  // count	integer	Specifies how many results per page to return. Default 5.
-
-  // "SELECT * FROM "Questions" LIMIT 5"
-
-  let obj_param = {
-    question_id: 1,
-    page: 1,
-    count: 5,
-  }
-
-  myPostGreSQL.getAnswers(obj_param, (err, result) => {
-    if (err) {
-      console.log('error getting question: ', err);
-    }
-
-    res.header("Content-Type",'application/json');
-    res.send(JSON.stringify(result, null, 4));
-  });
-
-});
-
-
-
+//this is the testbed for adding & reporting
 
 app.get('/', (req, res) => {
 
