@@ -209,20 +209,52 @@ const getAnswers = function(obj_param, callback) {
   // implementation choice to use multiple simple queries instead of a join, because
   // the nature of the join is not one to one which would create duplicative results.
 
-  var queryStr = `SELECT "Answers".body as answer_body, "Answers".date_written as answer_date, "Answers".answerer_name as answer_answerer, 
-                  "Answers".answerer_email as answerer_email, "Answers".reported as answer_reported, "Answers".helpful as answer_helpful,
-                  photos.id as photos_id, photos.url as photos_url
+  var queryStr = `SELECT "Answers".id as answer_id, "Answers".body as answer_body, "Answers".date_written as answer_date, "Answers".answerer_name as answerer_name, 
+                  "Answers".helpful as answer_helpfulness, photos.id as photos_id, photos.url as photos_url
                   FROM "Answers"
                   LEFT OUTER JOIN photos on "Answers".id = photos.answer_id
                   WHERE ("Answers".question_id = 1)`;
 
 
-  client.query(queryStr, (err, results) => {
+  client.query(queryStr, (err, res) => {
     if (err) {
       callback(err, null);
     }
     console.log('answer query GET');
-    callback(null, results.rows);
+
+
+     // these are flags
+      var previousAnswer_id = res.rows[0].answer_id;
+      var resultsArray = [];
+
+      let rowCounter = 0;
+
+      while (rowCounter < (res.rows.length - 1) ) {
+        //console.log(`outercurrentId : ${res.rows[rowCounter].question_id}`);
+
+        previousAnswer_id = res.rows[rowCounter].answer_id;
+
+        let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
+        // if there is at least one answer for this question, build the obj
+         
+          // if there is at least one photo url for this answer
+          if (res.rows[rowCounter].photos_id !== null) {
+            currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+          }
+
+          rowCounter++;
+          while (previousAnswer_id === res.rows[rowCounter].answer_id) {
+            if (res.rows[rowCounter].photos_id !== null) {
+              currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+              //console.log(buildPhotoObj(res.rows[rowCounter]));
+            }
+            rowCounter++;
+          }
+        
+        resultsArray.push(currentAnswerObj);
+        
+      }
+      callback(null, resultsArray);
   });
 
 
