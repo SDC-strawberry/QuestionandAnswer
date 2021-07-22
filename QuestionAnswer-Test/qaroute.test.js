@@ -31,7 +31,7 @@ describe('Unit Test Section: API Routes', () => {
     let url = 'http://localhost:3000/qa/questions';
 
     return axios.get(url)
-    .then(success => console.log('result success: '))
+    .then(success => console.log('get questions success: '))
     .catch(err => {
       console.log('there was an error: ');
      
@@ -45,7 +45,7 @@ describe('Unit Test Section: API Routes', () => {
     let url = 'http://localhost:3000/qa/questions/1/answers';
 
     return axios.get(url)
-    .then(success => console.log('result success: '))
+    .then(success => console.log('get answer success '))
     .catch(err => {
       console.log('there was an error: ');
     })
@@ -104,7 +104,7 @@ describe('Unit Test Section: API Routes', () => {
 
     return axios.put(url)
     .then(success => {
-      //console.log('q helpful success', success)
+      console.log('q helpful success', success.status)
       expect(success.status).toBe(200);
     })
     .catch(err => {
@@ -121,7 +121,7 @@ describe('Unit Test Section: API Routes', () => {
 
     return axios.put(url)
     .then(success => {
-      //console.log('q report success', success)
+      console.log('q report success', success.status)
       expect(success.status).toBe(200);
     })
     .catch(err => {
@@ -137,7 +137,7 @@ describe('Unit Test Section: API Routes', () => {
 
     return axios.put(url)
     .then(success => {
-      //console.log('a helpful success', success)
+      console.log('a helpful success', success.status)
       expect(success.status).toBe(200);
     })
     .catch(err => {
@@ -155,7 +155,7 @@ describe('Unit Test Section: API Routes', () => {
 
     return axios.put(url)
     .then(success => {
-      //console.log('a report success', success)
+      console.log('a report success', success.status)
       expect(success.status).toBe(200);
     })
     .catch(err => {

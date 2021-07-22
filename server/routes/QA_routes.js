@@ -131,8 +131,6 @@ router.put('/questions/:question_id/helpful', (req, res) => {
 router.put('/questions/:question_id/report', (req, res) => {
   //console.log('/questions/:question_id/report PUT route called: ');
 
-  console.log('this is the question_id: ', req.params.question_id)
-
   myPostGreSQL.reportQuestion(req.params.question_id, function(err, result) {
     if (err) {
       console.log('Error reporting question: ', err);
