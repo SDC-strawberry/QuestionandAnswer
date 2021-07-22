@@ -126,7 +126,7 @@ const getQuestions = function(obj_param, callback) {
       if (err) {
         callback(err, null);
       }
-      console.log('massive query');
+      console.log('get questions w massive query called');
 
       // these are flags
       var previousQuestion_id = res.rows[0].question_id;
@@ -273,14 +273,23 @@ const getAnswers = function(obj_param, callback) {
 
 };
 
+
+// const newQuestion = {
+//   product_id: req.body.product_id,
+//   body: req.body.question,
+//   date_written: req.body.date_written,
+//   asker_name: req.body.asker_name,
+//   asker_email: req.body.asker_email,
+// };
+
 // *********  GET QUESTIONS AND ANSWERS ********* 
 
 // database interaction to add a question into the database
 // schema for reference: id,product_id,body,date_written,asker_name,asker_email,reported,helpful
 const addQuestion = function(q_obj, callback) {
 
-  var queryStr = `INSERT INTO "Questions" (id, product_id, body, date_written, asker_name, asker_email, reported, helpful)`;
-  queryStr += ` VALUES ('${q_obj.id}', '${q_obj.product_id}', '${q_obj.body}', '${q_obj.date_written}', '${q_obj.asker_name}', '${q_obj.asker_email}',   ${q_obj.reported}, '${q_obj.question_helpful}')`;
+  var queryStr = `INSERT INTO "Questions" (product_id, body, date_written, asker_name, asker_email, reported, helpful)`;
+  queryStr += ` VALUES ('${q_obj.product_id}', '${q_obj.body}', '${q_obj.date_written}', '${q_obj.asker_name}', '${q_obj.asker_email}', ${false}, '${0}')`;
 
   //console.log('this is the query string: ', queryStr);
   client.query(queryStr, (err, res) => {
@@ -293,12 +302,23 @@ const addQuestion = function(q_obj, callback) {
 
 };
 
+
+
+// const answerToBePosted = {
+//   question_id: req.body.question_id,
+//   body: req.body.answer_body,
+//   date_written: req.body.date_written,
+//   answerer_name: req.body.answerer_name,
+//   answerer_email: req.body.answerer_email,
+// };
+
+
 // database interaction to add a question into the database
 // schema: id,question_id,body,date_written,answerer_name,answerer_email,reported,helpful
 const addAnswer = function(a_obj, callback) {
 
-  var queryStr = `INSERT INTO "Answers" (id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful)`;
-  queryStr += ` VALUES ('${a_obj.id}', '${a_obj.question_id}', '${a_obj.body}', '${a_obj.date_written}', '${a_obj.answerer_name}', '${a_obj.answerer_email}','${a_obj.reported}', '${a_obj.helpful}')`;
+  var queryStr = `INSERT INTO "Answers" (question_id, body, date_written, answerer_name, answerer_email, reported, helpful)`;
+  queryStr += ` VALUES ('${a_obj.question_id}', '${a_obj.body}', '${a_obj.date_written}', '${a_obj.answerer_name}', '${a_obj.answerer_email}','${false}', '${0}')`;
 
   console.log('this is the query string: ', queryStr);
   client.query(queryStr, (err, res) => {

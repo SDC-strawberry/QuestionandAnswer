@@ -4,6 +4,7 @@ const QAroutes = require('./server/routes/QA_routes.js');
 //const myNoSQLdb = require("./NoSQLdatabase/mongoindex.js");
 const app = express();
 const PORT = 3000;
+const cors = require('cors');
 
 
 //perhaps process.env.port || 6379 is better practice?
@@ -18,6 +19,7 @@ const redis = require('redis');
 // const redisClient = redis.createClient(REDIS_PORT);
 
 // import routes
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/../client/dist"));

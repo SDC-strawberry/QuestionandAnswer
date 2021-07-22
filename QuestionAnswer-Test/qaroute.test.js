@@ -1,76 +1,170 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { act } from "react-dom/test-utils";
+
+
+// My Mock Data
 import listQuestions from './listquestionsexample.js';
-import axios from 'axios';
-import { debug } from 'webpack';
 import questionsPerProduct from './questionsPerProduct.js';
 import answersPerQuestion from './answersPerQuestion.js';
+import $ from 'jquery';
+import axios from "axios";
 
 
-//import userEvent from '@testing-library/user-event'
-//jest.mock('axios');
-// commented out for integration test 2
 
 
-// ********************  TEST INITIALIZATION BEGIN  ********************
-
-require("babel-polyfill");
-
-
-var secondProduct = {
-  id: 22126,
-  campus: 'hr-rpp',
-  name: 'Heir Force Ones',
-  slogan: 'A sneaker dynasty',
-  description: "Now where da boxes where I keep mine? You should peep mine, maybe once or twice but never three times. I'm just a sneaker pro, I love Pumas and shell toes, but can't nothin compare to a fresh crispy white pearl",
-  category: 'Kicks',
-  default_price: '99.00',
-  created_at: '2021-03-18T16:09:30.589Z',
-  updated_at: '2021-03-18T16:09:30.589Z',
-}
-
-var mockFunction = () => {};
-
-var MockAdapter = require("axios-mock-adapter");
-// // This sets the mock adapter on the default instance
-var mock = new MockAdapter(axios);
-
-// // Mock any GET request to /users
-// // arguments for reply are (status, data, headers)
-mock.onGet("/testtest").reply(200, {
-  users: [{ id: 1, name: "John Smith" }],
-});
-mock.onGet('http://localhost:3000/qa/questions/').reply(200, listQuestions);
-//mock.onGet('http://localhost:3000/qa/answers/').reply(200, answersPerQuestion);
-//post question Mock Handler
-mock.onPost(`http://localhost:3000/qa/questions/`).reply(200, {success: 'success'});
-mock.onPut().reply(200, {});
 
 
 // ********************  TEST INITIALIZATION END  ********************
 
+const currentRoute = 'http://localhost:3000/qa/questions';
+ 
 
 // ********************  UNIT TESTING SECTION BEGIN  ********************
 
-describe('Unit Test Section: Routes', () => {
+describe('Unit Test Section: API Routes', () => {
 
 
-  test('Unit Test 0:  Test to ensure basic test functions are working', () => {
-
-    // axios.get('http://localhost:3000/qa/questions/')
-    //   .then(response => {
-    //     console.log('this is the mocked response: ', response);
-    //   });
-
+  test('Unit Test 0:  Test to ensure testing is working', () => {
     expect(1).toEqual(1);
   });
 
-  test('Unit Test 1:  Does the component <QuestionAnswer/> render?', () => {
-    expect(2).toEqual(2);
-    
+  test('Unit Test 1: GET /questions', () => {
+
+    let url = 'http://localhost:3000/qa/questions';
+
+    return axios.get(url)
+    .then(success => console.log('result success: '))
+    .catch(err => {
+      console.log('there was an error: ');
+     
+    })
+
   });
+
+
+  test('Unit Test 2: GET /answers (per question)', () => {
+
+    let url = 'http://localhost:3000/qa/questions/1/answers';
+
+    return axios.get(url)
+    .then(success => console.log('result success: '))
+    .catch(err => {
+      console.log('there was an error: ');
+    })
+
+  });
+
+  // test('Unit Test 3: POST new /answers ', () => {
+
+  //   let url = 'http://localhost:3000/qa/questions/1/answers';
+  //   let postedAnswer = {
+  //     question_id: 1,
+  //     body: "test answer body",
+  //     date_written: 1599089609530,
+  //     answerer_name: "test answer name",
+  //     answerer_email: "test answer email",
+  //   };
+
+  //   return axios.post(url, postedAnswer)
+  //   .then(success => {
+  //     console.log('answer post success: ')
+  //   })
+  //   .catch(err => {
+  //     console.log('answer post error: ');
+  //   })
+
+  
+  // });
+
+  // test('Unit Test 4: POST new /question ', () => {
+
+  //   let url = 'http://localhost:3000/qa/questions/';
+  //   let postedQuestion = {
+  //     product_id: 1,
+  //     body: "test question body",
+  //     date_written: 1599089609530,
+  //     asker_name: "test question asker name",
+  //     asker_email: "test question asker email",
+  //   };
+
+  //   return axios.post(url, postedQuestion)
+  //   .then(success => {
+  //     console.log('question post success: ')
+  //   })
+  //   .catch(err => {
+  //     console.log('question post error: ');
+  //   })
+
+    
+
+
+  //});
+
+  test('Unit Test 5: Mark Question as Helpful', () => {
+
+    let url = 'http://localhost:3000/qa/questions/2/helpful';
+
+    return axios.put(url)
+    .then(success => {
+      //console.log('q helpful success', success)
+      expect(success.status).toBe(200);
+    })
+    .catch(err => {
+      //console.log('q helpful error');
+      expect(err.status).toBe(200);
+    })
+
+ 
+  });
+
+  test('Unit Test 6: Report Question', () => {
+
+    let url = 'http://localhost:3000/qa/questions/2/report';
+
+    return axios.put(url)
+    .then(success => {
+      //console.log('q report success', success)
+      expect(success.status).toBe(200);
+    })
+    .catch(err => {
+      //console.log('q report error: ');
+      expect(err.status).toBe(200);
+    })
+
+  });
+  
+  test('Unit Test 7: Mark Answer as Helpful', () => {
+
+    let url = 'http://localhost:3000/qa/answers/2/helpful';
+
+    return axios.put(url)
+    .then(success => {
+      //console.log('a helpful success', success)
+      expect(success.status).toBe(200);
+    })
+    .catch(err => {
+      console.log('a helpful error: ');
+      expect(err.status).toBe(200);
+      
+    })
+
+  
+  });
+
+  test('Unit Test 8: Report Answer ', () => {
+
+    let url = 'http://localhost:3000/qa/answers/2/report';
+
+    return axios.put(url)
+    .then(success => {
+      //console.log('a report success', success)
+      expect(success.status).toBe(200);
+    })
+    .catch(err => {
+      console.log('a report error: ');
+      expect(err.status).toBe(200);
+    })
+
+   });
+
 
 });
 
