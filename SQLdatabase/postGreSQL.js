@@ -296,7 +296,7 @@ const addQuestion = function(q_obj, callback) {
     if (err) {
       callback(err, null);
     }
-    console.log('successfully added record');
+    //console.log('successfully added questin record');
     callback(null, res);
   });
 
@@ -320,7 +320,7 @@ const addAnswer = function(a_obj, callback) {
   var queryStr = `INSERT INTO "Answers" (question_id, body, date_written, answerer_name, answerer_email, reported, helpful)`;
   queryStr += ` VALUES ('${a_obj.question_id}', '${a_obj.body}', '${a_obj.date_written}', '${a_obj.answerer_name}', '${a_obj.answerer_email}','${false}', '${0}')`;
 
-  console.log('this is the query string: ', queryStr);
+  //console.log('this is the query string: ', queryStr);
   client.query(queryStr, (err, res) => {
     if (err) {
       callback(err, null);

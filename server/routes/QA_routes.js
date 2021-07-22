@@ -95,7 +95,7 @@ router.post('/questions', (req, res) => {
 
   const newQuestion = {
     product_id: req.body.product_id,
-    body: req.body.question,
+    body: req.body.question_body,
     date_written: req.body.date_written,
     asker_name: req.body.asker_name,
     asker_email: req.body.asker_email,

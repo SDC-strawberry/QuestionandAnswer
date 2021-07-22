@@ -52,51 +52,51 @@ describe('Unit Test Section: API Routes', () => {
 
   });
 
-  // test('Unit Test 3: POST new /answers ', () => {
+  test('Unit Test 3: POST new /answers ', () => {
 
-  //   let url = 'http://localhost:3000/qa/questions/1/answers';
-  //   let postedAnswer = {
-  //     question_id: 1,
-  //     body: "test answer body",
-  //     date_written: 1599089609530,
-  //     answerer_name: "test answer name",
-  //     answerer_email: "test answer email",
-  //   };
+    let url = 'http://localhost:3000/qa/questions/1/answers';
+    let postedAnswer = {
+      question_id: 56,
+      answer_body: "test answer body",
+      date_written: 1599089609530,
+      answerer_name: "test answer name",
+      answerer_email: "test answer email",
+    };
 
-  //   return axios.post(url, postedAnswer)
-  //   .then(success => {
-  //     console.log('answer post success: ')
-  //   })
-  //   .catch(err => {
-  //     console.log('answer post error: ');
-  //   })
+    return axios.post(url, postedAnswer)
+    .then(success => {
+      console.log('answer post success: ')
+    })
+    .catch(err => {
+      console.log('answer post error: ');
+    })
 
   
-  // });
+  });
 
-  // test('Unit Test 4: POST new /question ', () => {
+  test('Unit Test 4: POST new /question ', () => {
 
-  //   let url = 'http://localhost:3000/qa/questions/';
-  //   let postedQuestion = {
-  //     product_id: 1,
-  //     body: "test question body",
-  //     date_written: 1599089609530,
-  //     asker_name: "test question asker name",
-  //     asker_email: "test question asker email",
-  //   };
+    let url = 'http://localhost:3000/qa/questions/';
+    let postedQuestion = {
+      product_id: 56,
+      question_body: "test question body",
+      date_written: 1599089609530,
+      asker_name: "test question asker name",
+      asker_email: "test question asker email",
+    };
 
-  //   return axios.post(url, postedQuestion)
-  //   .then(success => {
-  //     console.log('question post success: ')
-  //   })
-  //   .catch(err => {
-  //     console.log('question post error: ');
-  //   })
+    return axios.post(url, postedQuestion)
+    .then(success => {
+      console.log('question post success: ')
+    })
+    .catch(err => {
+      console.log('question post error: ');
+    })
 
     
 
 
-  //});
+  });
 
   test('Unit Test 5: Mark Question as Helpful', () => {
 
