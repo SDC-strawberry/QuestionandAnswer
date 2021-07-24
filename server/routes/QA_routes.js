@@ -32,7 +32,7 @@ router.get('/questions', (req, res) => {
     //console.log('GET question success ', result)
 
     res.header("Content-Type",'application/json');
-    res.send(JSON.stringify(result, null, 4));
+    res.status(200).send(JSON.stringify(result, null, 4));
 
   });
 
@@ -57,7 +57,7 @@ router.get('/questions/:question_id/answers', (req, res) => {
       console.log('Error getting answers: ', err);
     }
     res.header("Content-Type",'application/json');
-    res.send(JSON.stringify(result, null, 4));
+    res.status(200).send(JSON.stringify(result, null, 4));
   });
 
 });
@@ -83,7 +83,7 @@ router.post('/questions/:question_id/answers', (req, res) => {
       console.log('Error adding question: ', err);
     }
     //console.log('Report Question Success: ', result)
-    res.send(result);
+    res.status(201).send(result);
   });
 
 });
@@ -106,7 +106,7 @@ router.post('/questions', (req, res) => {
       console.log('Error adding question: ', err);
     }
     //console.log('Report Question Success: ', result)
-    res.send(result);
+    res.status(201).send(result);
   });
 
 });
@@ -123,7 +123,7 @@ router.put('/questions/:question_id/helpful', (req, res) => {
       console.log('Error marking question as helpful:', err);
     }
     //console.log('Helpful Question successful: ', result)
-    res.send(result);
+    res.status(204).send(result);
   });
 });
 
@@ -136,7 +136,7 @@ router.put('/questions/:question_id/report', (req, res) => {
       console.log('Error reporting question: ', err);
     }
     //console.log('Report Question Success: ', result)
-    res.send(result);
+    res.status(204).send(result);
   });
 
 });
@@ -152,7 +152,7 @@ router.put('/answers/:answer_id/helpful', (req, res) => {
       console.log('Error marking answer as helpful: ', err);
     }
   //  console.log('Success marking answer as helpful: ', result);
-    res.send(result);
+    res.status(204).send(result);
   });
 
 });
@@ -167,7 +167,7 @@ router.put('/answers/:answer_id/report', (req, res) => {
       console.log('error reporting answer ', err);
     }
   //-  console.log('success reporting answer: ', result);
-    res.send(result);
+    res.status(204).send(result);
   });
 
 });

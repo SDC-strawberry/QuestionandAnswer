@@ -30,8 +30,12 @@ describe('Unit Test Section: API Routes', () => {
 
     let url = 'http://localhost:3000/qa/questions';
 
+
     return axios.get(url)
-    .then(success => console.log('get questions success: '))
+    .then(success => {
+      console.log('get questions success: ')
+      expect(success.status).toBe(200);
+    })
     .catch(err => {
       console.log('there was an error: ');
      
@@ -45,7 +49,10 @@ describe('Unit Test Section: API Routes', () => {
     let url = 'http://localhost:3000/qa/questions/1/answers';
 
     return axios.get(url)
-    .then(success => console.log('get answer success '))
+    .then(success => {
+      console.log('get answer success ')
+      expect(success.status).toBe(200);
+    })
     .catch(err => {
       console.log('there was an error: ');
     })
@@ -66,6 +73,7 @@ describe('Unit Test Section: API Routes', () => {
     return axios.post(url, postedAnswer)
     .then(success => {
       console.log('answer post success: ')
+      expect(success.status).toBe(201);
     })
     .catch(err => {
       console.log('answer post error: ');
@@ -88,9 +96,11 @@ describe('Unit Test Section: API Routes', () => {
     return axios.post(url, postedQuestion)
     .then(success => {
       console.log('question post success: ')
+      expect(success.status).toBe(201);
     })
     .catch(err => {
       console.log('question post error: ');
+      //expect(success.status).toBe(201);
     })
 
     
@@ -105,11 +115,11 @@ describe('Unit Test Section: API Routes', () => {
     return axios.put(url)
     .then(success => {
       console.log('q helpful success', success.status)
-      expect(success.status).toBe(200);
+      expect(success.status).toBe(204);
     })
     .catch(err => {
       //console.log('q helpful error');
-      expect(err.status).toBe(200);
+      expect(err.status).toBe(204);
     })
 
  
@@ -122,11 +132,11 @@ describe('Unit Test Section: API Routes', () => {
     return axios.put(url)
     .then(success => {
       console.log('q report success', success.status)
-      expect(success.status).toBe(200);
+      expect(success.status).toBe(204);
     })
     .catch(err => {
       //console.log('q report error: ');
-      expect(err.status).toBe(200);
+      expect(err.status).toBe(204);
     })
 
   });
@@ -138,11 +148,11 @@ describe('Unit Test Section: API Routes', () => {
     return axios.put(url)
     .then(success => {
       console.log('a helpful success', success.status)
-      expect(success.status).toBe(200);
+      expect(success.status).toBe(204);
     })
     .catch(err => {
       console.log('a helpful error: ');
-      expect(err.status).toBe(200);
+      expect(err.status).toBe(204);
       
     })
 
@@ -156,11 +166,11 @@ describe('Unit Test Section: API Routes', () => {
     return axios.put(url)
     .then(success => {
       console.log('a report success', success.status)
-      expect(success.status).toBe(200);
+      expect(success.status).toBe(204);
     })
     .catch(err => {
       console.log('a report error: ');
-      expect(err.status).toBe(200);
+      expect(err.status).toBe(204);
     })
 
    });
