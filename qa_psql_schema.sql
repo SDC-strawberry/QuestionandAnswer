@@ -2,6 +2,8 @@
 /* Table 'Questions' */
 
 
+
+
 CREATE TABLE "Questions" (
 id integer,
 product_id integer,
@@ -52,4 +54,10 @@ ALTER TABLE "Answers" ADD CONSTRAINT "photos-Answers"
 FOREIGN KEY (photos)
 REFERENCES photos(id);
 */
+
+
+
+CREATE INDEX idx_Answers_question_id ON "Answers" (question_id);
+CREATE INDEX idx_photos_answer_id ON photos (answer_id);
+CREATE INDEX idx_Questions_product_id ON "Questions" (product_id);
 

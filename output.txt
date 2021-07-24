@@ -1,0 +1,4 @@
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS                      PORTS     NAMES
+06485539004d   postgres       "docker-entrypoint.s…"   24 minutes ago   Exited (1) 24 minutes ago             pg
+9ef46c586e2f   283229d7cbe0   "/bin/sh -c 'npm ins…"   3 hours ago      Exited (1) 3 hours ago                serene_easley
+8ffc7237ee5c   bed0878a5595   "/docker-entrypoint.…"   2 weeks ago      Created                               docker-tutorial

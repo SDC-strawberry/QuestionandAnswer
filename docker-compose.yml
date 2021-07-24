@@ -1,0 +1,14 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: questionandanswer
+    volumes:
+      - ./01_users.sql:/docker-entrypoint-initdb.d/01_users.sql
+      - ./02_qadump.sql:/docker-entrypoint-initdb.d/02_qadump.sql

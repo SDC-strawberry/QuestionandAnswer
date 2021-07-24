@@ -11,11 +11,9 @@
 -- ---
 
 
-DROP DATABASE IF EXISTS questionandanswer;
+DROP DATABASE IF EXISTS q_a;
 
-CREATE DATABASE questionandanswer;
-
-USE questionandanswer;
+CREATE DATABASE q_a;
 
 DROP TABLE IF EXISTS Questions;
 		
@@ -104,3 +102,6 @@ ALTER TABLE Photos ADD FOREIGN KEY (answer_id) REFERENCES Answers (id);
 -- ('','');
 -- INSERT INTO `Interactions` (`id`,`element`,`widget`,`time`) VALUES
 -- ('','','','');
+CREATE INDEX idx_Answers_question_id ON "Answers" (question_id);
+CREATE INDEX idx_photos_answer_id ON photos (answer_id);
+CREATE INDEX idx_Questions_product_id ON "Questions" (product_id);
