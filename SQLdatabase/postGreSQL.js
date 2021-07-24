@@ -54,10 +54,13 @@ client.connect()
 
 const buildQuestionObj = function(rowElement) {
 
+  let timeFormat = new Date(0);
+  timeFormat.setUTCMilliseconds(rowElement.question_date);
+
   let new_question_obj = {
     question_id : rowElement.question_id,
     question_body : rowElement.question_body,
-    question_date : rowElement.question_date,
+    question_date : timeFormat.toISOString(),
     asker_name : rowElement.asker_name,
     question_helpfulness : rowElement.question_helpfulness,
     reported : rowElement.reported,
@@ -68,11 +71,13 @@ const buildQuestionObj = function(rowElement) {
 }
 
 const buildAnswerObj = function(rowElement) {
+  let timeFormat = new Date(0);
+  timeFormat.setUTCMilliseconds(rowElement.answer_date);
 
   let new_answer_obj = {
     id : rowElement.answer_id,
     body : rowElement.answer_body,
-    date : rowElement.answer_date,
+    date : timeFormat.toISOString(),
     answerer_name : rowElement.answerer_name, 
     helpfulness : rowElement.answer_helpfulness,
     photos: [],
