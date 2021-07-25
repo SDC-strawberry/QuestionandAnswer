@@ -107,7 +107,7 @@ const getQuestions = function(obj_param, callback) {
   let lowerbound = (page - 1) * count;
   let upperbound = page * count;
 
-  console.log(`entered page, ${page} : entered count, ${count}`);
+  console.log(`entered page, ${page} : entered count, ${count}: entered product_id ${product_id}`);
   console.log(`lowerbound: ${lowerbound}, upperbound: ${upperbound}`);
 
   //for now im opting for getting all data in a single query
@@ -118,7 +118,7 @@ const getQuestions = function(obj_param, callback) {
                   photos.id as photos_id, photos.url as photos_url from "Questions" 
                   LEFT OUTER JOIN "Answers" on "Questions".id = "Answers".question_id 
                   LEFT OUTER JOIN photos on "Answers".id = photos.answer_id
-                  WHERE ("Questions".product_id = ${product_id}) AND (("Questions".id > ${lowerbound}) AND ("Questions".id <= ${upperbound}))
+                  WHERE ("Questions".product_id = ${product_id})
                   ORDER BY "Questions".id`;
 
     client.query(queryStr, (err, res) => {
@@ -127,81 +127,98 @@ const getQuestions = function(obj_param, callback) {
       }
       console.log('get questions w massive query called');
 
-      // these are flags
-      var previousQuestion_id = res.rows[0].question_id;
-      var previousAnswer_id = res.rows[0].answer_id;
-      var resultsArray = [];
 
-      let rowCounter = 0;
-
-      while (rowCounter < (res.rows.length - 1) ) {
-        //console.log(`outercurrentId : ${res.rows[rowCounter].question_id}`);
-
-        previousQuestion_id = res.rows[rowCounter].question_id;
-
-        let currentQuestionObj = buildQuestionObj(res.rows[rowCounter]);
-        // if there is at least one answer for this question, build the obj
-        if (res.rows[rowCounter].answer_id !== null) {
-          let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
-          currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+      if (!res.rows[0]) {
+        var finalObject = {
+          product_id: product_id,
+          results: [],
+        }
   
-            // if there is at least one photo url for this answer
-            if (res.rows[rowCounter].photos_id !== null) {
-              currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-            }
-        }
+        callback(null, finalObject);
+      }
+      else {
 
+        // these are flags
+        var previousQuestion_id = res.rows[0].question_id;
+        var previousAnswer_id = res.rows[0].answer_id;
+        var resultsArray = [];
 
-        while ((previousQuestion_id === res.rows[rowCounter].question_id) && (rowCounter < (res.rows.length - 1))) {
-          
-          let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
-          previousAnswer_id = res.rows[rowCounter].answer_id;
-          
-          // we can probably change this to not even call buildAnswerObj
-          if (res.rows[rowCounter].answer_id) {
+        let rowCounter = 0;
+
+        while (rowCounter < (res.rows.length - 1) ) {
+          //console.log(`outercurrentId : ${res.rows[rowCounter].question_id}`);
+
+          previousQuestion_id = res.rows[rowCounter].question_id;
+
+          let currentQuestionObj = buildQuestionObj(res.rows[rowCounter]);
+          // if there is at least one answer for this question, build the obj
+          if (res.rows[rowCounter].answer_id !== null) {
+            let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
             currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+    
+              // if there is at least one photo url for this answer
+              if (res.rows[rowCounter].photos_id !== null) {
+                currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+              }
           }
 
-            // there might be a first photo under this answer
-            if (res.rows[rowCounter].photos_id !== null) {
-              currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-              //console.log(buildPhotoObj(res.rows[rowCounter]));
+
+          while ((previousQuestion_id === res.rows[rowCounter].question_id) && (rowCounter < (res.rows.length - 1))) {
+            
+            let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
+            previousAnswer_id = res.rows[rowCounter].answer_id;
+            
+            // we can probably change this to not even call buildAnswerObj
+            if (res.rows[rowCounter].answer_id) {
+              currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
             }
 
-          rowCounter++;
+              // there might be a first photo under this answer
+              if (res.rows[rowCounter].photos_id !== null) {
+                currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+                //console.log(buildPhotoObj(res.rows[rowCounter]));
+              }
 
-          while (previousAnswer_id === res.rows[rowCounter].answer_id) {
-            if (res.rows[rowCounter].photos_id !== null) {
-              currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-              //console.log(buildPhotoObj(res.rows[rowCounter]));
-            }
             rowCounter++;
+
+            while (previousAnswer_id === res.rows[rowCounter].answer_id) {
+              if (res.rows[rowCounter].photos_id !== null) {
+                currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+                //console.log(buildPhotoObj(res.rows[rowCounter]));
+              }
+              rowCounter++;
+            }
+
+
+            
           }
-
-
-          
+          resultsArray.push(currentQuestionObj);
         }
-        resultsArray.push(currentQuestionObj);
-      }
 
-
-      //added the final answer being cut off
-      if (res.rows[rowCounter].answer_id !== null) {
-        let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
-        resultsArray[resultsArray.length - 1].answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
-
-          // if there is at least one photo url for this answer
-          if (res.rows[rowCounter].photos_id !== null) {
-            currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+        if (res.rows[rowCounter]) {
+        //added the final answer being cut off
+          let currentQuestionObj = buildQuestionObj(res.rows[rowCounter]);
+          // if there is at least one answer for this question, build the obj
+          if (res.rows[rowCounter].answer_id !== null) {
+            let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
+            currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+    
+              // if there is at least one photo url for this answer
+              if (res.rows[rowCounter].photos_id !== null) {
+                currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+              }
           }
-      }
+          resultsArray.push(currentQuestionObj);
 
-      var finalObject = {
-        product_id: product_id,
-        results: resultsArray,
-      }
+        }
 
-      callback(null, finalObject);
+        var finalObject = {
+          product_id: product_id,
+          results: resultsArray,
+        }
+
+        callback(null, finalObject);
+      }
       
     });
 

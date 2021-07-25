@@ -17,7 +17,7 @@ router.get('/questions', (req, res) => {
 
   // these are default values for now
   let obj_param = {
-    product_id: 1,
+    product_id: (req.query.product_id) ? req.query.product_id : 1,
     page: (req.query.page) ? req.query.page : 1,
     count: (req.query.count) ? req.query.count : 5
   }
