@@ -104,28 +104,22 @@ const getQuestions = function(obj_param, callback) {
 
   let { page, count, product_id } = obj_param;
 
-  
-  //var queryStr = `SELECT * FROM "Questions" WHERE product_id = ${product_id} LIMIT ${count}`;
+  let lowerbound = (page - 1) * count;
+  let upperbound = page * count;
 
-  // first limit by page
-  // next we join by the answers;
-
-  //var queryStr = `SELECT * from "Questions" `;
-  // var queryStr = `SELECT "Questions".id as question_id, "Questions".body as question_body, "Answers".body as answer_body, photos.url as photo_url from "Questions"`;
-  //   queryStr+= `LEFT OUTER JOIN "Answers" on "Questions".id = "Answers".question_id `;
-  //   queryStr+= `LEFT OUTER JOIN photos on "Answers".id = photos.answer_id `;
-  //   queryStr+= `WHERE ("Questions".id > 1 AND "Questions".id < 11) ORDER BY "Questions".id`;
-
+  console.log(`entered page, ${page} : entered count, ${count}`);
+  console.log(`lowerbound: ${lowerbound}, upperbound: ${upperbound}`);
 
   //for now im opting for getting all data in a single query
-  var queryStr = `SELECT "Questions".id as question_pk, "Questions".id as question_id, "Questions".body as question_body, 
+  var queryStr = `SELECT "Questions".id as question_id, "Questions".body as question_body, 
                   "Questions".date_written as question_date, "Questions".asker_name as asker_name, "Questions".helpful as question_helpfulness,
                   "Questions".reported as reported, "Answers".id as answer_id, "Answers".body as answer_body, 
                   "Answers".date_written as answer_date, "Answers".answerer_name as answerer_name, "Answers".helpful as answer_helpfulness,
                   photos.id as photos_id, photos.url as photos_url from "Questions" 
                   LEFT OUTER JOIN "Answers" on "Questions".id = "Answers".question_id 
                   LEFT OUTER JOIN photos on "Answers".id = photos.answer_id
-                  WHERE ("Questions".product_id = 1) ORDER BY "Questions".id`;
+                  WHERE ("Questions".product_id = ${product_id}) AND (("Questions".id > ${lowerbound}) AND ("Questions".id <= ${upperbound}))
+                  ORDER BY "Questions".id`;
 
     client.query(queryStr, (err, res) => {
       if (err) {
@@ -186,14 +180,14 @@ const getQuestions = function(obj_param, callback) {
         }
         resultsArray.push(currentQuestionObj);
       }
-      
 
       var finalObject = {
         product_id: product_id,
         results: resultsArray,
       }
 
-      callback(null, finalObject);
+      //callback(null, finalObject);
+      callback(null, res.rows);
     });
 
 };
@@ -203,7 +197,11 @@ const getQuestions = function(obj_param, callback) {
 const getAnswers = function(obj_param, callback) {
 
   let { page, count, question_id } = obj_param;
+  let lowerbound = (page - 1) * count;
+  let upperbound = page * count;
 
+  console.log(`answer entered page, ${page} : entered count, ${count}, question_id: ${question_id}`);
+  console.log(`answer lowerbound: ${lowerbound}, upperbound: ${upperbound}`);
 
   // var queryStr = `SELECT * FROM "Answers" where question_id = ${question_id} LIMIT ${count}`;
   // get all the ids of the Answers and perform a query for each of the answers returned for their photos.
@@ -228,15 +226,26 @@ const getAnswers = function(obj_param, callback) {
 
   client.query(queryStr, (err, res) => {
     if (err) {
+      console.log('no results for answers');
       callback(err, null);
     }
-    console.log('answer query GET');
+    console.log('answer query GET ');
 
+
+    if (!res.rows[0]) {
+      var finalObject = {
+        question_id: question_id,
+        page: page,
+        count: count,
+        results: [],
+      }
+      callback(null, finalObject);
+    }
+    else {
 
      // these are flags
       var previousAnswer_id = res.rows[0].answer_id;
       var resultsArray = [];
-
       let rowCounter = 0;
 
       while (rowCounter < (res.rows.length - 1) ) {
@@ -262,19 +271,31 @@ const getAnswers = function(obj_param, callback) {
           }
         
         resultsArray.push(currentAnswerObj);
-        
+      }
+
+      if (res.rows[rowCounter]) {
+        let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
+
+        if (res.rows[rowCounter].photos_id !== null) {
+          currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+        }
+  
+        resultsArray.push(currentAnswerObj);
       }
 
       var finalObject = {
         question_id: question_id,
         page: page,
         count: count,
+        //firstresult: res.rows,
         results: resultsArray,
       }
 
-      callback(null, finalObject);
-  });
+      //callback(null, res.rows)
 
+      callback(null, finalObject);
+    }
+  });
 
 };
 
