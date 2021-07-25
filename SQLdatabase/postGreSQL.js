@@ -177,8 +177,23 @@ const getQuestions = function(obj_param, callback) {
             }
             rowCounter++;
           }
+
+
+          
         }
         resultsArray.push(currentQuestionObj);
+      }
+
+
+      //added the final answer being cut off
+      if (res.rows[rowCounter].answer_id !== null) {
+        let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
+        resultsArray[resultsArray.length - 1].answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
+
+          // if there is at least one photo url for this answer
+          if (res.rows[rowCounter].photos_id !== null) {
+            currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
+          }
       }
 
       var finalObject = {
@@ -186,8 +201,8 @@ const getQuestions = function(obj_param, callback) {
         results: resultsArray,
       }
 
-      //callback(null, finalObject);
-      callback(null, res.rows);
+      callback(null, finalObject);
+      
     });
 
 };
