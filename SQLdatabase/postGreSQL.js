@@ -1,3 +1,5 @@
+
+const parseQuery = require('./parseFunctions.js');
 const {Client } = require('pg')
 
 const client = new Client({
@@ -50,53 +52,6 @@ client.connect()
 
 
 
-
-
-const buildQuestionObj = function(rowElement) {
-
-  let timeFormat = new Date(0);
-  timeFormat.setUTCMilliseconds(rowElement.question_date);
-
-  let new_question_obj = {
-    question_id : rowElement.question_id,
-    question_body : rowElement.question_body,
-    question_date : timeFormat.toISOString(),
-    asker_name : rowElement.asker_name,
-    question_helpfulness : rowElement.question_helpfulness,
-    reported : rowElement.reported,
-    answers : {},
-  }
-
-  return new_question_obj;
-}
-
-const buildAnswerObj = function(rowElement) {
-  let timeFormat = new Date(0);
-  timeFormat.setUTCMilliseconds(rowElement.answer_date);
-
-  let new_answer_obj = {
-    id : rowElement.answer_id,
-    body : rowElement.answer_body,
-    date : timeFormat.toISOString(),
-    answerer_name : rowElement.answerer_name, 
-    helpfulness : rowElement.answer_helpfulness,
-    photos: [],
-  }
-
-  return new_answer_obj;
-  
-}
-
-const buildPhotoObj = function(rowElement) {
-  let built_obj = {
-    id: rowElement.photos_id,
-    url: rowElement.photos_url,
-  }
-  return built_obj;
-}
-
-
-
 // *********  GET QUESTIONS AND ANSWERS ********* 
 
 // database interaction to add a question into the database
@@ -115,7 +70,7 @@ const getQuestions = function(obj_param, callback) {
                   "Questions".date_written as question_date, "Questions".asker_name as asker_name, "Questions".helpful as question_helpfulness,
                   "Questions".reported as reported, "Answers".id as answer_id, "Answers".body as answer_body, 
                   "Answers".date_written as answer_date, "Answers".answerer_name as answerer_name, "Answers".helpful as answer_helpfulness,
-                  photos.id as photos_id, photos.url as photos_url from "Questions" 
+                  photos.id as photo_id, photos.url as photo_url from "Questions" 
                   LEFT OUTER JOIN "Answers" on "Questions".id = "Answers".question_id 
                   LEFT OUTER JOIN photos on "Answers".id = photos.answer_id
                   WHERE ("Questions".product_id = ${product_id})
@@ -127,101 +82,20 @@ const getQuestions = function(obj_param, callback) {
       }
       console.log('get questions w massive query called');
 
-
       if (!res.rows[0]) {
-        var finalObject = {
+        callback(null, {
           product_id: product_id,
+          firstresults: res.rows,
           results: [],
-        }
-  
-        callback(null, finalObject);
+        });
       }
       else {
-
-        // these are flags
-        var previousQuestion_id = res.rows[0].question_id;
-        var previousAnswer_id = res.rows[0].answer_id;
-        var resultsArray = [];
-
-        let rowCounter = 0;
-
-        while (rowCounter < (res.rows.length - 1) ) {
-          //console.log(`outercurrentId : ${res.rows[rowCounter].question_id}`);
-
-          previousQuestion_id = res.rows[rowCounter].question_id;
-
-          let currentQuestionObj = buildQuestionObj(res.rows[rowCounter]);
-          // if there is at least one answer for this question, build the obj
-          if (res.rows[rowCounter].answer_id !== null) {
-            let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
-            currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
-    
-              // if there is at least one photo url for this answer
-              if (res.rows[rowCounter].photos_id !== null) {
-                currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-              }
-          }
-
-
-          while ((previousQuestion_id === res.rows[rowCounter].question_id) && (rowCounter < (res.rows.length - 1))) {
-            
-            let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
-            previousAnswer_id = res.rows[rowCounter].answer_id;
-            
-            // we can probably change this to not even call buildAnswerObj
-            if (res.rows[rowCounter].answer_id) {
-              currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
-            }
-
-              // there might be a first photo under this answer
-              if (res.rows[rowCounter].photos_id !== null) {
-                currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-                //console.log(buildPhotoObj(res.rows[rowCounter]));
-              }
-
-            rowCounter++;
-
-            while (previousAnswer_id === res.rows[rowCounter].answer_id) {
-              if (res.rows[rowCounter].photos_id !== null) {
-                currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-                //console.log(buildPhotoObj(res.rows[rowCounter]));
-              }
-              rowCounter++;
-            }
-
-
-            
-          }
-          resultsArray.push(currentQuestionObj);
-        }
-
-        if (res.rows[rowCounter]) {
-        //added the final answer being cut off
-          let currentQuestionObj = buildQuestionObj(res.rows[rowCounter]);
-          // if there is at least one answer for this question, build the obj
-          if (res.rows[rowCounter].answer_id !== null) {
-            let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
-            currentQuestionObj.answers[res.rows[rowCounter].answer_id] = currentAnswerObj;
-    
-              // if there is at least one photo url for this answer
-              if (res.rows[rowCounter].photos_id !== null) {
-                currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-              }
-          }
-          resultsArray.push(currentQuestionObj);
-
-        }
-
-        var finalObject = {
+        callback(null, {
           product_id: product_id,
-          results: resultsArray,
-        }
-
-        callback(null, finalObject);
+          results: parseQuery.parseGetQuestions(res.rows),
+        });
       }
-      
     });
-
 };
 
 
@@ -265,67 +139,20 @@ const getAnswers = function(obj_param, callback) {
 
 
     if (!res.rows[0]) {
-      var finalObject = {
+      callback(null, {
         question_id: question_id,
         page: page,
         count: count,
         results: [],
-      }
-      callback(null, finalObject);
+      });
     }
     else {
-
-     // these are flags
-      var previousAnswer_id = res.rows[0].answer_id;
-      var resultsArray = [];
-      let rowCounter = 0;
-
-      while (rowCounter < (res.rows.length - 1) ) {
-        //console.log(`outercurrentId : ${res.rows[rowCounter].question_id}`);
-
-        previousAnswer_id = res.rows[rowCounter].answer_id;
-
-        let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
-        // if there is at least one answer for this question, build the obj
-         
-          // if there is at least one photo url for this answer
-          if (res.rows[rowCounter].photos_id !== null) {
-            currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-          }
-
-          rowCounter++;
-          while (previousAnswer_id === res.rows[rowCounter].answer_id) {
-            if (res.rows[rowCounter].photos_id !== null) {
-              currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-              //console.log(buildPhotoObj(res.rows[rowCounter]));
-            }
-            rowCounter++;
-          }
-        
-        resultsArray.push(currentAnswerObj);
-      }
-
-      if (res.rows[rowCounter]) {
-        let currentAnswerObj = buildAnswerObj(res.rows[rowCounter]);
-
-        if (res.rows[rowCounter].photos_id !== null) {
-          currentAnswerObj.photos.push(buildPhotoObj(res.rows[rowCounter]));
-        }
-  
-        resultsArray.push(currentAnswerObj);
-      }
-
-      var finalObject = {
+      callback(null, {
         question_id: question_id,
         page: page,
         count: count,
-        //firstresult: res.rows,
-        results: resultsArray,
-      }
-
-      //callback(null, res.rows)
-
-      callback(null, finalObject);
+        results: parseQuery.parseGetAnswersResponse(res.rows),
+      });
     }
   });
 
