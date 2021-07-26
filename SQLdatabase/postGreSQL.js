@@ -92,7 +92,7 @@ const getQuestions = function(obj_param, callback) {
       else {
         callback(null, {
           product_id: product_id,
-          results: parseQuery.parseGetQuestions(res.rows),
+          results: parseQuery.parseGetQuestions(res.rows, lowerbound, upperbound),
         });
       }
     });

@@ -45,7 +45,7 @@ const buildPhotoObj = function(rowElement) {
 
 
 
-const parseGetQuestions = function(results) {
+const parseGetQuestions = function(results, lowerbound, upperbound) {
 
 
   var resultsArray = [];
@@ -94,13 +94,13 @@ const parseGetQuestions = function(results) {
     resultsArray.push(resultsObj[x]);
   }
 
-  //resultsArray.push(resultsObj);
-
-  return resultsArray;
+  // parse based on page and count
+  return resultsArray.slice(lowerbound, upperbound);
+  
 }
 
 
-
+// old code 
 const parseGetQuestionsResponse = function(results) {
 
   // these are flags

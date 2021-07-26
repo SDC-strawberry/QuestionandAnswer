@@ -17,7 +17,7 @@ export default function () {
 
   for (var id = 1; id <= 100; id++) {
     http.get(`http://localhost:3000/qa/questions/?product_id=${id}`);
-    sleep(3);
+    sleep(1);
   }
   //http.get(url);
   // http.post(url, payload, params);
