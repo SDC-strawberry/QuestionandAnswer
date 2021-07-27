@@ -48,6 +48,7 @@ export default function () {
   };
 
   // testing the question post
+  // POST QUESTIONS TEST
   // var url = 'http://localhost:3000/qa/questions/';
 
   // for (var id = 1; id <= 10; id++) {
@@ -64,13 +65,32 @@ export default function () {
     question_id: 7,
   });
 
-  for (var id = 1; id <= 10; id++) {
-    http.post(`http://localhost:3000/qa/questions/${id}/answers`, payload, params);
+  // post ANSWERS test
+  // for (var id = 1; id <= 10; id++) {
+  //   http.post(`http://localhost:3000/qa/questions/${id}/answers`, payload, params);
+  //   sleep(1);
+  // }
+
+  // testing the http PUTs
+  for (var i = 500; i < 510; i++) {
+    http.put(`http://localhost:3000/qa/answers/${i}/report`);
+    sleep(1);
+  }
+  
+  for (var i = 500; i < 510; i++) {
+    http.put(`http://localhost:3000/qa/answers/${i}/helpful`);
     sleep(1);
   }
 
+  for (var i = 500; i < 510; i++) {
+    http.put(`http://localhost:3000/qa/questions/${i}/report`);
+    sleep(1);
+  }
 
-  // testing the http PUTs
+  for (var i = 500; i < 510; i++) {
+    http.put(`http://localhost:3000/qa/questions/${i}/helpful`);
+    sleep(1);
+  }
   
 }
 

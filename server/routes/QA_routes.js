@@ -114,7 +114,7 @@ router.post('/questions', (req, res) => {
 // Mark Question as Helpful
 router.put('/questions/:question_id/helpful', (req, res) => {
 
-  //console.log('/questions/:question_id/helpful PUT route called: ');
+  console.log('/questions/:question_id/helpful PUT route called: ');
 
   myPostGreSQL.helpfulQuestion(req.params.question_id, function(err, result) {
     if (err) {
@@ -127,7 +127,7 @@ router.put('/questions/:question_id/helpful', (req, res) => {
 
 // Report Question
 router.put('/questions/:question_id/report', (req, res) => {
-  //console.log('/questions/:question_id/report PUT route called: ');
+  console.log('/questions/:question_id/report PUT route called: ');
 
   myPostGreSQL.reportQuestion(req.params.question_id, function(err, result) {
     if (err) {
@@ -143,7 +143,7 @@ router.put('/questions/:question_id/report', (req, res) => {
 // Mark Answer as Helpful
 router.put('/answers/:answer_id/helpful', (req, res) => {
 
-  //console.log('/answers/:answer_id/helpful PUT route called: ');
+  console.log('/answers/:answer_id/helpful PUT route called: ');
  
   myPostGreSQL.helpfulAnswer(req.params.answer_id, function(err, result) {
     if (err) {
@@ -158,7 +158,7 @@ router.put('/answers/:answer_id/helpful', (req, res) => {
 // Report Answer
 router.put('/answers/:answer_id/report', (req, res) => {
 
-  //console.log('/answers/:answer_id/report PUT route called: ');
+  console.log('/answers/:answer_id/report PUT route called: ');
 
   myPostGreSQL.reportAnswer(req.params.answer_id, function(err, result) {
     if (err) {
