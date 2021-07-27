@@ -110,7 +110,44 @@ const parseGetQuestions = function(results, lowerbound, upperbound) {
 
 
 
-const parseGetAnswers = function(results) {
+const parseGetAnswers = function(results, lowerbound, upperbound) {
+
+  var resultsArray = [];
+  var resultsObj = {};
+  let rowCounter = 0;
+
+  while (rowCounter < results.length) {
+
+    let aID = results[rowCounter].answer_id;
+         
+    if (!(aID in resultsObj)) {
+      resultsObj[aID] = buildAnswerObj(results[rowCounter]);
+    } 
+    
+    if (results[rowCounter].photo_id !== null) {
+      if (!(results[rowCounter].photo_id in resultsObj[aID].photos)) {
+        resultsObj[aID].photos[results[rowCounter].photo_id] = buildPhotoObj(results[rowCounter]);
+      }
+    }
+    rowCounter++;    
+  }
+
+  // clean up the object by converting Question objects to Array
+  
+    for (var x in resultsObj) {
+      if (resultsObj[x].photos) {
+        // cleans up photos object to array
+        var photoarray = [];
+        for (var y in resultsObj[x].photos) {
+          photoarray.push(resultsObj[x].photos[y]);
+        }
+        resultsObj[x].photos = photoarray;
+      }
+      resultsArray.push(resultsObj[x]);
+    }
+
+  // parse based on page and count
+  return resultsArray.slice(lowerbound, upperbound);
 
 }
 
@@ -122,14 +159,12 @@ const DEPRECATED_parseGetQuestionsResponse = function(results) {
   var previousQuestion_id = results[0].question_id;
   var previousAnswer_id = results[0].answer_id;
   var resultsArray = [];
-
   let rowCounter = 0;
 
   while (rowCounter < (results.length - 1) ) {
     // for the outermost
-    console.log('Outer RowCounter: ', rowCounter, ' Question_id: ', results[rowCounter].question_id);
+    // console.log('Outer RowCounter: ', rowCounter, ' Question_id: ', results[rowCounter].question_id);
     //console.log(`outercurrentId : ${results[rowCounter].question_id}`);
-
     previousQuestion_id = results[rowCounter].question_id;
 
     let currentQuestionObj = buildQuestionObj(results[rowCounter]);
@@ -146,11 +181,9 @@ const DEPRECATED_parseGetQuestionsResponse = function(results) {
 
     //rowCounter++;
     //previous no rowCounter++;
-
-
     while ((previousQuestion_id === results[rowCounter].question_id) && (rowCounter < (results.length - 1))) {
       // new counter
-      console.log('Build Answer RowCounter: ', rowCounter, ' Question_id: ', results[rowCounter].question_id);
+      // console.log('Build Answer RowCounter: ', rowCounter, ' Question_id: ', results[rowCounter].question_id);
 
       let currentAnswerObj = DEPRECATED_buildAnswerObj(results[rowCounter]);
       previousAnswer_id = results[rowCounter].answer_id;
@@ -159,7 +192,6 @@ const DEPRECATED_parseGetQuestionsResponse = function(results) {
       if (results[rowCounter].answer_id) {
         currentQuestionObj.answers[results[rowCounter].answer_id] = currentAnswerObj;
       }
-
         // there might be a first photo under this answer
         if (results[rowCounter].photos_id !== null) {
           currentAnswerObj.photos.push(buildPhotoObj(results[rowCounter]));
@@ -169,25 +201,17 @@ const DEPRECATED_parseGetQuestionsResponse = function(results) {
       rowCounter++;
 
       while (previousAnswer_id === results[rowCounter].answer_id) {
-
-        console.log('Build photo RowCounter: ', rowCounter, ' Question_id: ', results[rowCounter].question_id);
-
-
+        // console.log('Build photo RowCounter: ', rowCounter, ' Question_id: ', results[rowCounter].question_id);
         if (results[rowCounter].photos_id !== null) {
           currentAnswerObj.photos.push(buildPhotoObj(results[rowCounter]));
           //console.log(buildPhotoObj(results[rowCounter]));
         }
         rowCounter++;
       }
-
-
-      
     }
     resultsArray.push(currentQuestionObj);
   }
-
-  console.log('Loop exited: ', rowCounter, ' Question_id: ', results[rowCounter].question_id);
-
+  //console.log('Loop exited: ', rowCounter, ' Question_id: ', results[rowCounter].question_id);
   if (results[rowCounter]) {
   //added the final answer being cut off
     let currentQuestionObj = buildQuestionObj(results[rowCounter]);
@@ -202,18 +226,9 @@ const DEPRECATED_parseGetQuestionsResponse = function(results) {
         }
     }
     resultsArray.push(currentQuestionObj);
-
   }
-
   return resultsArray;
-
 }
-
-
-
-
-
-
 
 
 const DEPRECATED_parseGetAnswersResponse = function(results) {

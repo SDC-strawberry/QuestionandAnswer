@@ -58,12 +58,10 @@ client.connect()
 const getQuestions = function(obj_param, callback) {
 
   let { page, count, product_id } = obj_param;
-
   let lowerbound = (page - 1) * count;
   let upperbound = page * count;
 
   console.log(`entered page, ${page} : entered count, ${count}: entered product_id ${product_id}`);
-  console.log(`lowerbound: ${lowerbound}, upperbound: ${upperbound}`);
 
   //for now im opting for getting all data in a single query
   var queryStr = `SELECT "Questions".id as question_id, "Questions".body as question_body, 
@@ -80,8 +78,7 @@ const getQuestions = function(obj_param, callback) {
       if (err) {
         callback(err, null);
       }
-      console.log('get questions w massive query called');
-
+   
       if (!res.rows[0]) {
         callback(null, {
           product_id: product_id,
@@ -107,37 +104,18 @@ const getAnswers = function(obj_param, callback) {
   let upperbound = page * count;
 
   console.log(`answer entered page, ${page} : entered count, ${count}, question_id: ${question_id}`);
-  console.log(`answer lowerbound: ${lowerbound}, upperbound: ${upperbound}`);
-
-  // var queryStr = `SELECT * FROM "Answers" where question_id = ${question_id} LIMIT ${count}`;
-  // get all the ids of the Answers and perform a query for each of the answers returned for their photos.
-
-  // we have to get all the photos for the particular answer in question, map that over all the returned 
-  // answer_ids.
-  // var queryStr2 = `SELECT * FROM photos where answer_id = ${answer_id}`;
-  // the results of that should be stuffed into a results array
-
-  // this is one way to do it, without joins, uses 2 queries
-  // var hypoQuery = `SELECT "Answers".id, photos.url FROM "Answers", photos WHERE question_id = 1 AND  photos.answer_id = "Answers".id`;
-
-  // implementation choice to use multiple simple queries instead of a join, because
-  // the nature of the join is not one to one which would create duplicative results.
   
   var queryStr = `SELECT "Answers".id as answer_id, "Answers".body as answer_body, "Answers".date_written as answer_date, "Answers".answerer_name as answerer_name, 
-                  "Answers".helpful as answer_helpfulness, photos.id as photos_id, photos.url as photos_url
+                  "Answers".helpful as answer_helpfulness, photos.id as photo_id, photos.url as photo_url
                   FROM "Answers"
                   LEFT OUTER JOIN photos on "Answers".id = photos.answer_id
                   WHERE ("Answers".question_id = ${question_id})`;
-
 
   client.query(queryStr, (err, res) => {
     if (err) {
       console.log('no results for answers');
       callback(err, null);
     }
-    console.log(`answer query GET call made for: ${question_id} `);
-
-
     if (!res.rows[0]) {
       callback(null, {
         question_id: question_id,
@@ -151,11 +129,10 @@ const getAnswers = function(obj_param, callback) {
         question_id: question_id,
         page: page,
         count: count,
-        results: parseQuery.DEPRECATED_parseGetAnswersResponse(res.rows),
+        results: parseQuery.parseGetAnswers(res.rows, lowerbound, upperbound),
       });
     }
   });
-
 };
 
 
