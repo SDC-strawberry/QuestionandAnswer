@@ -135,7 +135,7 @@ const getAnswers = function(obj_param, callback) {
       console.log('no results for answers');
       callback(err, null);
     }
-    console.log('answer query GET ');
+    console.log(`answer query GET call made for: ${question_id} `);
 
 
     if (!res.rows[0]) {
@@ -151,7 +151,7 @@ const getAnswers = function(obj_param, callback) {
         question_id: question_id,
         page: page,
         count: count,
-        results: parseQuery.parseGetAnswersResponse(res.rows),
+        results: parseQuery.DEPRECATED_parseGetAnswersResponse(res.rows),
       });
     }
   });

@@ -35,6 +35,23 @@ const buildAnswerObj = function(rowElement) {
   
 }
 
+const DEPRECATED_buildAnswerObj = function(rowElement) {
+  let timeFormat = new Date(0);
+  timeFormat.setUTCMilliseconds(rowElement.answer_date);
+
+  let new_answer_obj = {
+    id : rowElement.answer_id,
+    body : rowElement.answer_body,
+    date : timeFormat.toISOString(),
+    answerer_name : rowElement.answerer_name, 
+    helpfulness : rowElement.answer_helpfulness,
+    photos: [],
+  }
+
+  return new_answer_obj;
+  
+}
+
 const buildPhotoObj = function(rowElement) {
   let built_obj = {
     id: rowElement.photo_id,
@@ -46,7 +63,6 @@ const buildPhotoObj = function(rowElement) {
 
 
 const parseGetQuestions = function(results, lowerbound, upperbound) {
-
 
   var resultsArray = [];
   var resultsObj = {};
@@ -72,14 +88,10 @@ const parseGetQuestions = function(results, lowerbound, upperbound) {
         resultsObj[qID].answers[aID].photos[results[rowCounter].photo_id] = buildPhotoObj(results[rowCounter]);
       }
     }
-
-
     rowCounter++;    
   }
-
   // clean up the object by converting Question objects to Array
   for (var x in resultsObj) {
-
     for (var y in resultsObj[x].answers) {
       if (resultsObj[x].answers[y].photos) {
         // cleans up photos object to array
@@ -90,18 +102,21 @@ const parseGetQuestions = function(results, lowerbound, upperbound) {
         resultsObj[x].answers[y].photos = photoarray;
       }
     }
-
     resultsArray.push(resultsObj[x]);
   }
-
   // parse based on page and count
   return resultsArray.slice(lowerbound, upperbound);
-  
+}
+
+
+
+const parseGetAnswers = function(results) {
+
 }
 
 
 // old code 
-const parseGetQuestionsResponse = function(results) {
+const DEPRECATED_parseGetQuestionsResponse = function(results) {
 
   // these are flags
   var previousQuestion_id = results[0].question_id;
@@ -120,7 +135,7 @@ const parseGetQuestionsResponse = function(results) {
     let currentQuestionObj = buildQuestionObj(results[rowCounter]);
     // if there is at least one answer for this question, build the obj
     if (results[rowCounter].answer_id !== null) {
-      let currentAnswerObj = buildAnswerObj(results[rowCounter]);
+      let currentAnswerObj = DEPRECATED_buildAnswerObj(results[rowCounter]);
       currentQuestionObj.answers[results[rowCounter].answer_id] = currentAnswerObj;
 
         // if there is at least one photo url for this answer
@@ -137,7 +152,7 @@ const parseGetQuestionsResponse = function(results) {
       // new counter
       console.log('Build Answer RowCounter: ', rowCounter, ' Question_id: ', results[rowCounter].question_id);
 
-      let currentAnswerObj = buildAnswerObj(results[rowCounter]);
+      let currentAnswerObj = DEPRECATED_buildAnswerObj(results[rowCounter]);
       previousAnswer_id = results[rowCounter].answer_id;
       
       // we can probably change this to not even call buildAnswerObj
@@ -178,7 +193,7 @@ const parseGetQuestionsResponse = function(results) {
     let currentQuestionObj = buildQuestionObj(results[rowCounter]);
     // if there is at least one answer for this question, build the obj
     if (results[rowCounter].answer_id !== null) {
-      let currentAnswerObj = buildAnswerObj(results[rowCounter]);
+      let currentAnswerObj = DEPRECATED_buildAnswerObj(results[rowCounter]);
       currentQuestionObj.answers[results[rowCounter].answer_id] = currentAnswerObj;
 
         // if there is at least one photo url for this answer
@@ -201,7 +216,7 @@ const parseGetQuestionsResponse = function(results) {
 
 
 
-const parseGetAnswersResponse = function(results) {
+const DEPRECATED_parseGetAnswersResponse = function(results) {
 
   // these are flags
   var previousAnswer_id = results[0].answer_id;
@@ -213,7 +228,7 @@ const parseGetAnswersResponse = function(results) {
 
     previousAnswer_id = results[rowCounter].answer_id;
 
-    let currentAnswerObj = buildAnswerObj(results[rowCounter]);
+    let currentAnswerObj = DEPRECATED_buildAnswerObj(results[rowCounter]);
     // if there is at least one answer for this question, build the obj
     
       // if there is at least one photo url for this answer
@@ -234,7 +249,7 @@ const parseGetAnswersResponse = function(results) {
   }
 
   if (results[rowCounter]) {
-    let currentAnswerObj = buildAnswerObj(results[rowCounter]);
+    let currentAnswerObj = DEPRECATED_buildAnswerObj(results[rowCounter]);
 
     if (results[rowCounter].photos_id !== null) {
       currentAnswerObj.photos.push(buildPhotoObj(results[rowCounter]));
@@ -253,6 +268,7 @@ module.exports = {
   buildAnswerObj,
   buildPhotoObj,
   parseGetQuestions,
-  parseGetQuestionsResponse,
-  parseGetAnswersResponse,
+  parseGetAnswers,
+  DEPRECATED_parseGetQuestionsResponse,
+  DEPRECATED_parseGetAnswersResponse,
 };

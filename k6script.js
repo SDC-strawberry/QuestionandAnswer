@@ -21,6 +21,11 @@ export default function () {
   }
   //http.get(url);
   // http.post(url, payload, params);
+
+  for (var id = 1; id <= 100; id++) {
+    http.get(`http://localhost:3000/qa/questions/${id}/answers`);
+    sleep(1);
+  }
   
 }
 
