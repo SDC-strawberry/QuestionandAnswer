@@ -72,10 +72,9 @@ router.post('/questions/:question_id/answers', (req, res) => {
   // NOTE TO SELF UNCOMMENT THIS and ADD Product_ID to the initial axios request.
   const answerToBePosted = {
     question_id: req.body.question_id,
-    body: req.body.answer_body,
-    date_written: req.body.date_written,
-    answerer_name: req.body.answerer_name,
-    answerer_email: req.body.answerer_email,
+    body: req.body.body,
+    answerer_name: req.body.name,
+    answerer_email: req.body.email,
   };
 
   myPostGreSQL.addAnswer(answerToBePosted, function(err, result) {
@@ -95,10 +94,9 @@ router.post('/questions', (req, res) => {
 
   const newQuestion = {
     product_id: req.body.product_id,
-    body: req.body.question_body,
-    date_written: req.body.date_written,
-    asker_name: req.body.asker_name,
-    asker_email: req.body.asker_email,
+    body: req.body.body,
+    asker_name: req.body.name,
+    asker_email: req.body.email,
   };
 
   myPostGreSQL.addQuestion(newQuestion, function(err, result) {

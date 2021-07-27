@@ -150,8 +150,10 @@ const getAnswers = function(obj_param, callback) {
 // schema for reference: id,product_id,body,date_written,asker_name,asker_email,reported,helpful
 const addQuestion = function(q_obj, callback) {
 
+  let timestamp = new Date();
+  
   var queryStr = `INSERT INTO "Questions" (product_id, body, date_written, asker_name, asker_email, reported, helpful)`;
-  queryStr += ` VALUES ('${q_obj.product_id}', '${q_obj.body}', '${q_obj.date_written}', '${q_obj.asker_name}', '${q_obj.asker_email}', ${false}, '${0}')`;
+  queryStr += ` VALUES ('${q_obj.product_id}', '${q_obj.body}', '${timestamp.getTime()}', '${q_obj.asker_name}', '${q_obj.asker_email}', ${false}, '${0}')`;
 
   //console.log('this is the query string: ', queryStr);
   client.query(queryStr, (err, res) => {
@@ -179,17 +181,18 @@ const addQuestion = function(q_obj, callback) {
 // schema: id,question_id,body,date_written,answerer_name,answerer_email,reported,helpful
 const addAnswer = function(a_obj, callback) {
 
-  var queryStr = `INSERT INTO "Answers" (question_id, body, date_written, answerer_name, answerer_email, reported, helpful)`;
-  queryStr += ` VALUES ('${a_obj.question_id}', '${a_obj.body}', '${a_obj.date_written}', '${a_obj.answerer_name}', '${a_obj.answerer_email}','${false}', '${0}')`;
+  let timestamp = new Date();
 
-  //console.log('this is the query string: ', queryStr);
+  var queryStr = `INSERT INTO "Answers" (question_id, body, date_written, answerer_name, answerer_email, reported, helpful)`;
+  queryStr += ` VALUES ('${a_obj.question_id}', '${a_obj.body}', '${timestamp.getTime()}', '${a_obj.answerer_name}', '${a_obj.answerer_email}','${false}', '${0}')`;
+
+  // console.log('this is the query string: ', queryStr);
   client.query(queryStr, (err, res) => {
     if (err) {
       callback(err, null);
     }
     callback(null, res);
   });
-
 };
 
 
