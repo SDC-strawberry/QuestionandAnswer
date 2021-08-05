@@ -22,44 +22,44 @@ const currentRoute = 'http://localhost:3000/qa/questions';
 describe('Unit Test Section: API Routes', () => {
 
 
-  test('Unit Test 0:  Test to ensure testing is working', () => {
+  test('Integration Test 0:  Test to ensure testing is working', () => {
     expect(1).toEqual(1);
   });
 
-  test('Unit Test 1: GET /questions', () => {
+  test('Integration Test 1: GET /questions', () => {
 
-    let url = 'http://localhost:3000/qa/questions';
+    let url = 'http://localhost:3000/qa/questions/?product_id=11';
 
 
     return axios.get(url)
     .then(success => {
-      console.log('get questions success: ')
+      //console.log('get questions success: ')
       expect(success.status).toBe(200);
     })
     .catch(err => {
-      console.log('there was an error: ');
+      //console.log('there was an error: ');
      
     })
 
   });
 
 
-  test('Unit Test 2: GET /answers (per question)', () => {
+  test('Integration Test 2: GET /answers (per question)', () => {
 
     let url = 'http://localhost:3000/qa/questions/1/answers';
 
     return axios.get(url)
     .then(success => {
-      console.log('get answer success ')
+      //console.log('get answer success ')
       expect(success.status).toBe(200);
     })
     .catch(err => {
-      console.log('there was an error: ');
+      //console.log('there was an error: ');
     })
 
   });
 
-  test('Unit Test 3: POST new /answers ', () => {
+  test('Integration Test 3: POST new /answers ', () => {
 
     let url = 'http://localhost:3000/qa/questions/1/answers';
     let postedAnswer = {
@@ -72,17 +72,17 @@ describe('Unit Test Section: API Routes', () => {
 
     return axios.post(url, postedAnswer)
     .then(success => {
-      console.log('answer post success: ')
+      //console.log('answer post success: ')
       expect(success.status).toBe(201);
     })
     .catch(err => {
-      console.log('answer post error: ');
+      //console.log('answer post error: ');
     })
 
   
   });
 
-  test('Unit Test 4: POST new /question ', () => {
+  test('Integration Test 4: POST new /question ', () => {
 
     let url = 'http://localhost:3000/qa/questions/';
     let postedQuestion = {
@@ -95,11 +95,11 @@ describe('Unit Test Section: API Routes', () => {
 
     return axios.post(url, postedQuestion)
     .then(success => {
-      console.log('question post success: ')
+      //console.log('question post success: ')
       expect(success.status).toBe(201);
     })
     .catch(err => {
-      console.log('question post error: ');
+      //console.log('question post error: ');
       //expect(success.status).toBe(201);
     })
 
@@ -108,13 +108,13 @@ describe('Unit Test Section: API Routes', () => {
 
   });
 
-  test('Unit Test 5: Mark Question as Helpful', () => {
+  test('Integration Test 5: Mark Question as Helpful', () => {
 
     let url = 'http://localhost:3000/qa/questions/2/helpful';
 
     return axios.put(url)
     .then(success => {
-      console.log('q helpful success', success.status)
+      //console.log('q helpful success', success.status)
       expect(success.status).toBe(204);
     })
     .catch(err => {
@@ -125,13 +125,13 @@ describe('Unit Test Section: API Routes', () => {
  
   });
 
-  test('Unit Test 6: Report Question', () => {
+  test('Integration Test 6: Report Question', () => {
 
     let url = 'http://localhost:3000/qa/questions/2/report';
 
     return axios.put(url)
     .then(success => {
-      console.log('q report success', success.status)
+      //console.log('q report success', success.status)
       expect(success.status).toBe(204);
     })
     .catch(err => {
@@ -141,17 +141,17 @@ describe('Unit Test Section: API Routes', () => {
 
   });
   
-  test('Unit Test 7: Mark Answer as Helpful', () => {
+  test('Integration Test 7: Mark Answer as Helpful', () => {
 
     let url = 'http://localhost:3000/qa/answers/2/helpful';
 
     return axios.put(url)
     .then(success => {
-      console.log('a helpful success', success.status)
+      //console.log('a helpful success', success.status)
       expect(success.status).toBe(204);
     })
     .catch(err => {
-      console.log('a helpful error: ');
+      //console.log('a helpful error: ');
       expect(err.status).toBe(204);
       
     })
@@ -159,17 +159,17 @@ describe('Unit Test Section: API Routes', () => {
   
   });
 
-  test('Unit Test 8: Report Answer ', () => {
+  test('Integration Test 8: Report Answer ', () => {
 
     let url = 'http://localhost:3000/qa/answers/2/report';
 
     return axios.put(url)
     .then(success => {
-      console.log('a report success', success.status)
+      //console.log('a report success', success.status)
       expect(success.status).toBe(204);
     })
     .catch(err => {
-      console.log('a report error: ');
+      //console.log('a report error: ');
       expect(err.status).toBe(204);
     })
 

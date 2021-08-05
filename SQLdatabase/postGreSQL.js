@@ -4,10 +4,16 @@ const {Client } = require('pg')
 
 const client = new Client({
   user: 'Tom1',
-  host: 'localhost',
+  //use this for container to Postgres running on localhost
+  //host: 'host.docker.internal',  
+  //host: '3.134.118.143',
+  host: '18.218.160.4',  //new elastic IP address
+  //host: 'localhost',
   database: 'questionandanswer',
   password: 'password',
-  port: 5432,
+  port: 6003,
+  //use this for container to Postgres running on localhost (bc 5432 is std port)
+  //port: 5432,
 })
 
 client.connect()

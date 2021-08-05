@@ -9,6 +9,8 @@ services:
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: questionandanswer
+    ports:
+      - "6000:5432"
     volumes:
       - ./01_users.sql:/docker-entrypoint-initdb.d/01_users.sql
       - ./02_qadump.sql:/docker-entrypoint-initdb.d/02_qadump.sql
