@@ -10,17 +10,6 @@ var path = require('path');
 
 
 
-//perhaps process.env.port || 6379 is better practice?
-const REDIS_PORT = 6379;  
-
-const redis = require('redis');
-
-// function redis_Middleware(req, res, next) {
-
-// }
-
-// const redisClient = redis.createClient(REDIS_PORT);
-
 // import routes
 app.use(cors());
 app.use(express.json());

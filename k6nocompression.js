@@ -5,8 +5,8 @@ import { sleep } from 'k6';
 
 export let options = {
   stages: [
-    { duration: '30s', target: 1000 }, // simulate ramp-up of traffic from 1 to x users over 5 minutes.
-    { duration: '3m', target: 1000 }, // stay at x users for 1 minutes
+    { duration: '30s', target: 100 }, // simulate ramp-up of traffic from 1 to x users over 5 minutes.
+    { duration: '1m', target: 100 }, // stay at x users for 1 minutes
     { duration: '30s', target: 0 }, // ramp-down to 0 users
   ],
   thresholds: {
@@ -21,10 +21,10 @@ export default function () {
 
 
   //GET QUESTIONS ROUTE
-  for (var id = 1; id <= 200; id++) {
-  http.get(`http://localhost:3000/qa/questions/?product_id=${id}`);
+  //for (var id = 1; id <= 60; id++) {
+  http.get(`http://localhost:3000/qa/questions/?product_id=${1}`);
     sleep(1);
-  }
+  //}
 
   // GET ANSWERS ROUTE
   // for (var id = 1; id <= 100; id++) {

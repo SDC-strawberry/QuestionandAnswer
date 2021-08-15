@@ -3,6 +3,57 @@ const router = express.Router();
 const myPostGreSQL = require('../../SQLdatabase/postGreSQL.js');
 //const QA_RouteConfig = require('../../config.js');
 
+//perhaps process.env.port || 6379 is better practice?
+const REDIS_PORT = process.env.port || 6379; 
+const redis = require('redis');
+
+
+var redisClient = redis.createClient(REDIS_PORT);
+
+var redis_Middleware_Function = (req, res, next) => {
+  // TODO step 1) get the parameters, and possible the request type
+
+  if (req.method === "GET") {
+
+    // for the question page.
+    // req.query.product_id
+
+    // for the answer route
+    // req.query.question_id
+
+  } 
+  //  NO REDIS CACHING FOR POSTS AND PUTS...obvsly.
+
+  // TODO step 2) paramsKey
+  
+  // TODO step 3) turn parameters into a key.
+  let paramsKey = "Gquestions" + req.query.product_id + req.query.page + req.query.count;
+  // let paramsKey = "Ganswers" + req.query.question_id + req.query.page + req.query.count
+
+  // something like this...
+  redisClient.get(paramsKey, (err, redisCacheResponse) => {
+    if (err) throw err;
+
+    if (redisCacheResponse !== null) {
+
+      res.header("Content-Type",'application/json');
+      var formattedResponse = redisCacheResponse.replace(/\\/, 'testtesttestttestestst');
+      formattedResponse = JSON.stringify(JSON.parse(formattedResponse), null, 4);
+      console.log(formattedResponse);
+      res.status(200).send(formattedResponse);
+
+    } 
+    else {
+      next();
+    }
+  });
+
+}
+
+// my router middleware which will be executed for every request to the router
+// defined in index.js by app.use('/qa', QAroutes);
+router.use(redis_Middleware_Function);
+
 
 
 // GET QUESTION LIST for a given product_id
@@ -31,8 +82,22 @@ router.get('/questions', (req, res) => {
     }
     //console.log('GET question success ', result)
 
+    //once we get the information, set it to redis cache
+    let paramsKey = "Gquestions" + req.query.product_id + req.query.page + req.query.count;
+    let returnedQuery = JSON.stringify(result, null, 4);
+
+    redisClient.set(paramsKey, JSON.stringify(result), (err, redisCacheResponse) => { 
+
+      if (err) {
+        console.log('error in the redis Set cache')
+      } else {
+        console.log('data succesfully set into cache with key: ', paramsKey);
+      }
+
+    });
+
     res.header("Content-Type",'application/json');
-    res.status(200).send(JSON.stringify(result, null, 4));
+    res.status(200).send(returnedQuery);
 
   });
 
