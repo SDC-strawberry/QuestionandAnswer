@@ -1,16 +1,36 @@
+# PostgreSQL StatefulSet
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: nginx-deployment
-  labels:
-    app: nginx
+  name: postgresql-db
 spec:
-  replica: 2
+  serviceName: postgresql-db-service
   selector:
     matchLabels:
-      app: nginx
+      app: postgresql-db
+  replicas: 2
   template:
     metadata:
       labels:
-        app: nginx
-    spec:  
+        app: postgresql-db
+    spec:
+      containers:
+        - name: postgresql-db
+          image: postgres:latest
+          volumeMounts:
+            - name: postgresql-db-disk
+              mountPath: /data
+          env:
+            - name: POSTGRES_PASSWORD
+              value: testpassword
+            - name: PGDATA
+              value: /data/pgdata
+  # Volume Claim
+  volumeClaimTemplates:
+    - metadata:
+        name: postgresql-db-disk
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi

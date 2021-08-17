@@ -11,43 +11,45 @@ const redis = require('redis');
 var redisClient = redis.createClient(REDIS_PORT);
 
 var redis_Middleware_Function = (req, res, next) => {
+  //TODO step 0, distinguish from the routes
+
   // TODO step 1) get the parameters, and possible the request type
 
+  //  NO REDIS CACHING FOR POSTS AND PUTS
   if (req.method === "GET") {
 
-    // for the question page.
-    // req.query.product_id
-
-    // for the answer route
-    // req.query.question_id
-
-  } 
-  //  NO REDIS CACHING FOR POSTS AND PUTS...obvsly.
-
-  // TODO step 2) paramsKey
-  
-  // TODO step 3) turn parameters into a key.
-  let paramsKey = "Gquestions" + req.query.product_id + req.query.page + req.query.count;
-  // let paramsKey = "Ganswers" + req.query.question_id + req.query.page + req.query.count
-
-  // something like this...
-  redisClient.get(paramsKey, (err, redisCacheResponse) => {
-    if (err) throw err;
-
-    if (redisCacheResponse !== null) {
-
-      res.header("Content-Type",'application/json');
-      var formattedResponse = redisCacheResponse.replace(/\\/, 'testtesttestttestestst');
-      formattedResponse = JSON.stringify(JSON.parse(formattedResponse), null, 4);
-      console.log(formattedResponse);
-      res.status(200).send(formattedResponse);
-
-    } 
-    else {
-      next();
+    let paramsKey = '';
+    //depending on the path variable, we shape our keys differently. 
+    let receivedPath = req.path;
+    receivedPath.toLowerCase();
+    if (receivedPath === '/questions/') {
+      paramsKey = "Gquestions" + req.query.product_id + req.query.page + req.query.count;
     }
-  });
 
+    if (receivedPath === '/answers/') {
+      paramsKey = "Ganswers" + req.query.question_id + req.query.page + req.query.count;
+    }
+
+    redisClient.get(paramsKey, (err, redisCacheResponse) => {
+      if (err) throw err;
+  
+      if (redisCacheResponse !== null) {
+  
+        res.header("Content-Type",'application/json');
+        var formattedResponse = redisCacheResponse.replace(/\\/, 'testtesttestttestestst');
+        formattedResponse = JSON.stringify(JSON.parse(formattedResponse), null, 4);
+        console.log(formattedResponse);
+        formattedResponse = 'Returned from Redis Cache: \n' + formattedResponse;
+        
+        res.status(200).send(formattedResponse);
+  
+      } 
+      else {
+        next();
+      }
+    });
+  
+  } 
 }
 
 // my router middleware which will be executed for every request to the router
